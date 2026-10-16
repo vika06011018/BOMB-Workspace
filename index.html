@@ -16,7 +16,8 @@ $('logout').onclick=()=>{$('lobby').style.display='none';$('login').style.displa
 function modal(title,text){previous=document.activeElement;$('modalTitle').textContent=title;$('modalText').textContent=text;$('overlay').style.display='flex';$('close').focus()}
 function closeModal(){$('overlay').style.display='none';previous?.focus()}
 $('close').onclick=$('back').onclick=closeModal;document.addEventListener('keydown',e=>{if($('overlay').style.display==='flex'){if(e.key==='Escape')closeModal();if(e.key==='Tab'){e.preventDefault();(document.activeElement===$('close')?$('back'):$('close')).focus()}}});
-document.querySelectorAll('[data-module]').forEach(b=>b.onclick=()=>modal(b.dataset.module,'這個系統入口已預留。本次先確認共用登入與大廳，各系統操作頁面會依確認後的規格接續製作。'));
+document.querySelectorAll('[data-module]').forEach(b=>b.onclick=()=>{if(b.dataset.module==='WMS 倉儲管理'){location.href='./wms.html';return}modal(b.dataset.module,'這個系統入口已預留。本次先確認共用登入與大廳，各系統操作頁面會依確認後的規格接續製作。')});
 $('notice').onclick=()=>modal('通知中心','此版本顯示示範待辦：行政驗貨異常 2 筆、WMS 提領任務 3 項、HR 請假申請 1 筆。尚未連接實際系統資料。');
 $('date').textContent=new Intl.DateTimeFormat('zh-TW',{dateStyle:'full',timeZone:'Asia/Taipei'}).format(new Date());
+if(location.hash==='#lobby'){$('login').style.display='none';$('lobby').style.display='block'}
 </script></html>
