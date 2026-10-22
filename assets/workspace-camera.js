@@ -10105,6 +10105,42 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 (function(){
 'use strict';
 let active=null;
+/* Continuous batch scanning, embedded in the operation panel. No inventory writes. */
+function openInline(target){
+ if(active)active();
+ const parent=target.closest('.batch-panel');if(!parent)return;
+ const mount=document.createElement('section');mount.className='inline-camera';mount.setAttribute('aria-label','連續掃碼相機');
+ mount.innerHTML='<div class="inline-camera-frame"><video autoplay muted playsinline aria-label="相機即時畫面"></video><span class="inline-camera-guide" aria-hidden="true"></span></div><div class="inline-camera-controls"><button type="button" class="btn" data-switch>切換前／後相機</button><button type="button" class="btn" data-stop>停止相機</button></div><p class="inline-camera-status" role="status" aria-live="polite">正在請求相機權限…</p>';
+ const anchor=parent.querySelector('.batch-manual');parent.insertBefore(mount,anchor||target.closest('label'));
+ const button=parent.querySelector('.camera-trigger');if(button)button.hidden=true;
+ const video=mount.querySelector('video'),status=mount.querySelector('[role=status]'),switcher=mount.querySelector('[data-switch]');
+ const feedback=parent.querySelector('#batchFeedback'),feedbackObserver=new MutationObserver(()=>{if(feedback){status.textContent=feedback.textContent;status.dataset.state=feedback.dataset.state||'waiting';}});if(feedback)feedbackObserver.observe(feedback,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['data-state']});
+ let stream=null,timer=null,closed=false,session=0,facing='environment',lastCode='',lastSeen=0;
+ const stop=()=>{session++;clearTimeout(timer);if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;video.srcObject=null;};
+ const finish=()=>{if(closed)return;closed=true;stop();feedbackObserver.disconnect();document.removeEventListener('visibilitychange',hidden);window.removeEventListener('pagehide',finish);mount.remove();if(button?.isConnected)button.hidden=false;if(active===finish)active=null;};
+ const hidden=()=>{if(document.hidden)finish()};
+ async function start(){
+  stop();const token=session;switcher.disabled=true;lastCode='';lastSeen=0;
+  status.textContent='正在請求相機權限…';status.dataset.state='waiting';
+  try{
+   if(!isSecureContext||!navigator.mediaDevices?.getUserMedia)throw Error('此瀏覽器無法開啟相機，請使用 HTTPS 與支援相機的瀏覽器，或改用掃描器／手動輸碼。');
+   const next=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:facing},width:{ideal:1280},height:{ideal:720}}});
+   if(closed||token!==session){next.getTracks().forEach(t=>t.stop());return;}
+   stream=next;video.srcObject=stream;await video.play();if(closed||token!==session)return;
+   switcher.disabled=false;status.textContent='相機已開啟，請對準所選箱子的 QR。';
+   const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{willReadFrequently:true});
+   function decode(){
+    if(closed||token!==session)return;if(!target.isConnected||target.closest('#cardsReceive')?.hidden){finish();return;}
+    try{if(video.readyState>=2&&video.videoWidth){const scale=Math.min(1,800/video.videoWidth);canvas.width=Math.round(video.videoWidth*scale);canvas.height=Math.round(video.videoHeight*scale);ctx.drawImage(video,0,0,canvas.width,canvas.height);const frame=ctx.getImageData(0,0,canvas.width,canvas.height),result=jsQR(frame.data,canvas.width,canvas.height,{inversionAttempts:'attemptBoth'});
+     if(result?.data){const code=result.data.trim(),now=Date.now(),changed=code!==lastCode;lastSeen=now;if(changed){lastCode=code;target.value=code;target.dataset.scanMethod='平板相機';target.dataset.cameraValue=code;target.dispatchEvent(new Event('input',{bubbles:true}));const feedback=parent.querySelector('#batchFeedback');status.textContent=feedback?.textContent||'已辨識 QR，請核對結果。';status.dataset.state=feedback?.dataset.state||'waiting';}}else if(Date.now()-lastSeen>750){lastCode='';}
+    }}catch(e){status.textContent='暫時無法辨識，請調整距離或改用手動輸碼。';status.dataset.state='error';}
+    timer=setTimeout(decode,250);
+   }decode();
+  }catch(e){if(closed||token!==session)return;stop();switcher.disabled=false;status.dataset.state='error';status.textContent=({NotAllowedError:'相機權限未開啟，請允許網站使用相機，或改用手動輸碼。',NotFoundError:'找不到相機，請改用掃描器／手動輸碼。',NotReadableError:'相機可能被其他程式使用，請關閉後重試，或改用手動輸碼。'})[e.name]||e.message||'無法啟動相機，請改用手動輸碼。';}
+ }
+ mount.querySelector('[data-stop]').onclick=finish;switcher.onclick=()=>{facing=facing==='environment'?'user':'environment';start()};document.addEventListener('visibilitychange',hidden);window.addEventListener('pagehide',finish);active=finish;start();
+}
+
 function open(target){
  if(active)active();
  const dialog=document.createElement('dialog');dialog.className='qr-dialog camera-dialog';
@@ -10141,7 +10177,7 @@ function open(target){
 function attach(){
  document.querySelectorAll('#cardsReceive input[name=boxCode],.qr-dialog #scanValue').forEach(input=>{
   if(input.dataset.cameraAttached)return;input.dataset.cameraAttached='1';
-  const button=document.createElement('button');button.type='button';button.className='btn camera-trigger';button.textContent='開啟相機掃碼';button.onclick=()=>open(input);input.before(button);
+  const button=document.createElement('button');button.type='button';button.className='btn camera-trigger';button.textContent='開啟相機掃碼';button.onclick=()=>input.id==='batchCode'?openInline(input):open(input);if(input.id==='batchCode')input.closest('.batch-panel').insertBefore(button,input.closest('.batch-manual'));else input.before(button);
   input.addEventListener('input',()=>{if(input.value!==input.dataset.cameraValue){delete input.dataset.scanMethod;delete input.dataset.cameraValue;}});
  });
  if(active&&!document.querySelector('#cardsReceive:not([hidden]) #boxDetail input[name=boxCode],.qr-dialog:not(.camera-dialog) #scanValue'))active();
