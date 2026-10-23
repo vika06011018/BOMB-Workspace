@@ -35,7 +35,7 @@ function save(s){
 
 async function request(endpoint,{method='GET',body,token}={}){
  // This client never sends a bearer token to a caller-supplied URL.
- if(!['login','me','logout'].includes(endpoint))throw Error('不支援的 Portal API。');
+ if(!['login','me','logout','hr-handoffs'].includes(endpoint))throw Error('不支援的 Portal API。');
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),60000);
  try{
   const headers={Accept:'application/json'};
@@ -107,6 +107,26 @@ async function refresh(){
  }
 }
 
+// A handoff is issued for the current session and a specific popup nonce.
+async function createHRHandoff(nonce){
+ if(typeof nonce!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(nonce)){
+  throw Error('HR 開啟資料不完整，請重新點選入口。');
+ }
+ const s=snapshot(),ticket=generation;
+ if(!s){const error=Error('Portal 登入已到期，請重新登入。');error.status=401;throw error;}
+ try{
+  const data=await request('hr-handoffs',{method:'POST',token:s.sessionToken,body:{nonce}});
+  if(ticket!==generation||raw()?.sessionToken!==s.sessionToken
+   ||!snapshot())throw Error('Portal 登入已變更，請重新開啟 HR。');
+  if(typeof data?.code!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(data.code)
+   ||!(Date.parse(data.expiresAt)>Date.now()))throw Error('HR 交接回應不完整，請重新開啟。');
+  return {code:data.code,expiresAt:data.expiresAt};
+ }catch(error){
+  if(error.status===401)clearIf(s.sessionToken);
+  throw error;
+ }
+}
+
 async function logout(){
  const s=raw();
  generation++;
@@ -116,5 +136,5 @@ async function logout(){
 }
 
 // A cached person is for display. Protected operations must be checked by the server.
-window.PortalAPI=Object.freeze({login,refresh,logout,snapshot});
+window.PortalAPI=Object.freeze({login,refresh,logout,snapshot,createHRHandoff});
 })();
