@@ -1,0 +1,26 @@
+(function(){
+'use strict';
+const HR='https://bomb-hr.onrender.com',KEY='bomb-portal-hr-session-v1';
+const $=id=>document.getElementById(id),person=Workspace.guard('HR');
+if(!person)return;
+try{document.documentElement.dataset.theme=localStorage.getItem('bomb-workspace-theme-v1')||'dark';}catch{}
+const employee=String(person.employee||person.account).trim().toUpperCase();
+$('identity').textContent=person.name+' ／ '+employee;
+$('employee').value=employee;$('company').value=person.company;
+let session=null,pending=null,busy=false;
+const say=(s,error=false)=>{$('status').textContent=s;$('status').dataset.error=String(error);};
+function authorized(){const p=Workspace.current();return !!p&&p.id===person.id&&p.systems.includes('HR')&&String(p.employee||p.account).trim().toUpperCase()===employee;}
+function valid(s){return !!s&&s.personId===person.id&&s.employeeNo===employee&&typeof s.sessionToken==='string'&&s.sessionToken.length>10&&Date.parse(s.expiresAt)>Date.now();}
+function clear(){session=null;sessionStorage.removeItem(KEY);$('form').hidden=false;$('connected').hidden=true;}
+function show(){if(!valid(session))return clear();$('password').value='';$('form').hidden=true;$('connected').hidden=false;$('account').textContent=session.displayName+' ／ '+session.employeeNo+'，已通過 HR 身分驗證。';}
+async function api(path,options={}){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),60000);try{const r=await fetch(HR+'/api/v1/admin-auth/'+path,{...options,cache:'no-store',credentials:'omit',signal:controller.signal});let body;try{body=await r.json();}catch{throw Error('HR 回應格式異常，請稍後重試。');}if(!r.ok||!body.success){const e=Error(body.message||'HR 連線失敗，請稍後重試。');e.status=r.status;throw e;}return body.data;}catch(e){if(e.name==='AbortError')throw Error('HR 回應逾時，請稍後重試。');if(e instanceof TypeError)throw Error('目前無法連接 HR，請確認網路或稍後重試。');throw e;}finally{clearTimeout(timer);}}
+async function verify(){if(!authorized()){clear();throw Error('Portal 登入或權限已變更，請返回工作大廳。');}if(!valid(session)){clear();throw Error('HR 驗證已到期，請重新輸入 HR 管理密碼。');}const me=await api('me',{headers:{Authorization:'Bearer '+session.sessionToken}});if(me.employeeNo!==employee){clear();throw Error('HR 身分與 Portal 員工不一致，請聯絡管理者。');}return me;}
+$('form').onsubmit=async e=>{e.preventDefault();if(busy)return;busy=true;$('connect').disabled=true;say('正在驗證 HR 身分，首次連線可能需要一些時間…');const password=$('password').value;$('password').value='';try{if(!authorized())throw Error('Portal 登入或權限已變更，請返回工作大廳。');const companyCode=$('company').value.trim().toUpperCase();const data=await api('login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({companyCode,employeeNo:employee,password})});if(!authorized())throw Error('Portal 登入或權限已變更，請返回工作大廳。');session={...data,personId:person.id,companyCode};if(!valid(session))throw Error('HR 未提供有效登入資料，請重新驗證。');sessionStorage.setItem(KEY,JSON.stringify(session));show();say('已連接 HR。請按「開啟 HR 管理後台」。');}catch(e){clear();say(e.message,true);}finally{busy=false;$('connect').disabled=false;}};
+function stopPending(close){if(!pending)return;clearTimeout(pending.timer);const popup=pending.popup;pending=null;$('open').disabled=false;if(close)try{popup.close();}catch{}}
+$('open').onclick=async()=>{if(pending||busy)return;const popup=window.open('about:blank','_blank','popup,width=1280,height=900');if(!popup){say('瀏覽器封鎖了新視窗，請允許本站開啟彈出式視窗後重試。',true);return;}$('open').disabled=true;try{await verify();if(popup.closed)throw Error('HR 視窗已關閉，請重新開啟。');const nonce=crypto.randomUUID();pending={popup,nonce,sent:false,timer:setTimeout(()=>{stopPending(true);say('HR 入口尚未就緒，請確認 HR 接收頁已部署，再重新開啟。',true);},60000)};popup.location.replace(HR+'/admin/portal-entry.html#'+nonce);say('正在開啟 HR 管理後台…');}catch(e){try{popup.close();}catch{}$('open').disabled=false;if(e.status===401)clear();say(e.message,true);}};
+window.addEventListener('message',async e=>{if(!pending||e.origin!==HR||e.source!==pending.popup||e.data?.nonce!==pending.nonce)return;if(e.data.type==='BOMB_HR_READY'&&!pending.sent){try{await verify();if(!pending)return;pending.sent=true;pending.popup.postMessage({type:'BOMB_HR_SESSION',nonce:pending.nonce,token:session.sessionToken,employeeNo:employee,expiresAt:session.expiresAt},HR);}catch(err){stopPending(true);if(err.status===401)clear();say(err.message,true);}}else if(e.data.type==='BOMB_HR_OPENED'){stopPending(false);say('已開啟 HR 管理後台。');}else if(e.data.type==='BOMB_HR_ERROR'){stopPending(true);say('HR 無法確認登入身分，請重新驗證或稍後重試。',true);}});
+$('disconnect').onclick=async()=>{if(busy)return;busy=true;$('disconnect').disabled=true;try{if(valid(session))await api('logout',{method:'POST',headers:{Authorization:'Bearer '+session.sessionToken}});stopPending(true);clear();say('已登出 HR 連線。');}catch(e){if(e.status===401){clear();say('HR 登入已失效，已清除連線。');}else say('HR 登出未完成：'+e.message,true);}finally{busy=false;$('disconnect').disabled=false;}};
+window.addEventListener('storage',()=>{if(!authorized()){stopPending(true);clear();location.replace('./index.html');}});
+window.addEventListener('pagehide',()=>stopPending(true));
+(async()=>{try{session=JSON.parse(sessionStorage.getItem(KEY)||'null');if(!valid(session)){clear();return;}say('正在確認 HR 登入狀態…');await verify();show();say('HR 登入仍有效，可以直接開啟後台。');}catch(e){clear();say(e.message,true);}})();
+})();
