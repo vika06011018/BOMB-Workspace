@@ -10159,6 +10159,11 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });
 </script>
+<style>
+html.portal-verifying #login,html.portal-verifying #lobby{display:none!important}
+html.portal-verifying body:before{content:'正在確認 Portal 登入狀態…';position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:#f5f6fa;color:#243149;font:17px Arial,'Microsoft JhengHei',sans-serif}
+html[data-theme=dark].portal-verifying body:before{background:#0b0c0d;color:#edba60}
+</style>
 <script>window.PORTAL_SERVER_LOGIN=true;</script>
 <script src="./assets/workspace-portal-api.js?v=20261023a"></script>
 <script src="./assets/workspace-auth.js?v=20261023a"></script>
@@ -10220,10 +10225,11 @@ function restorePortalSession(){
  if(!Workspace.usesServer()){
   portalSessionReady=true;
   if(!showLobby()){$('lobby').style.display='none';$('login').style.display='grid';}
+  document.documentElement.classList.remove('workspace-starting','portal-verifying');
   return Promise.resolve();
  }
  portalSessionReady=false;portalLoginBusy=true;
- $('lobby').style.display='none';$('login').style.display='grid';
+ document.documentElement.classList.add('portal-verifying');
  const submit=$('form').querySelector('[type="submit"]');if(submit)submit.disabled=true;
  $('error').textContent='正在確認 Portal 登入狀態，請稍候…';
  portalRestorePending=(async()=>{
@@ -10234,11 +10240,12 @@ function restorePortalSession(){
   }catch(error){
    portalSessionReady=false;$('lobby').style.display='none';$('login').style.display='grid';
    $('error').textContent=error.message;
-  }finally{portalLoginBusy=false;if(submit)submit.disabled=false;portalRestorePending=null;}
+  }finally{portalLoginBusy=false;if(submit)submit.disabled=false;portalRestorePending=null;document.documentElement.classList.remove('workspace-starting','portal-verifying');}
  })();
  return portalRestorePending;
 }
-window.addEventListener('pageshow',restorePortalSession);
+// Initial restoration is started below; only recheck pageshow for back/forward cache.
+window.addEventListener('pageshow',event=>{if(event.persisted)restorePortalSession();});
 window.addEventListener('storage',()=>{if(!showLobby())location.replace('./index.html')});
 function modal(title,text){previous=document.activeElement;$('modalTitle').textContent=title;$('modalText').textContent=text;$('overlay').style.display='flex';$('close').focus()}
 function closeModal(){$('overlay').style.display='none';previous?.focus()}
@@ -10248,7 +10255,6 @@ $('myAccount').onclick=()=>{const p=Workspace.current();if(!p){location.replace(
 $('notice').onclick=()=>{const p=Workspace.current();if(!p){location.replace('./index.html');return}modal('通知中心','目前尚未連接實際案件通知。各系統開放後，依帳號權限顯示待處理事項。')};
 $('date').textContent=new Intl.DateTimeFormat('zh-TW',{dateStyle:'full',timeZone:'Asia/Taipei'}).format(new Date());
 restorePortalSession();
-document.documentElement.classList.remove('workspace-starting');
 </script><script>
 (function(){const key='bomb-workspace-theme-v1';const root=document.documentElement;let mode='dark';try{mode=localStorage.getItem(key)||'dark'}catch{}root.dataset.theme=mode==='light'?'light':'dark';const b=document.createElement('button');b.type='button';b.className='theme-switch';function apply(v,save){root.dataset.theme=v;b.textContent=v==='dark'?'☀ 淺色模式':'☾ 深色模式';b.setAttribute('aria-label',v==='dark'?'切換為淺色模式':'切換為深色模式');b.setAttribute('aria-pressed',String(v==='dark'));if(save)try{localStorage.setItem(key,v)}catch{}}b.onclick=()=>apply(root.dataset.theme==='dark'?'light':'dark',true);document.querySelector('#lobby .top-actions').append(b);apply(root.dataset.theme,false);window.addEventListener('storage',e=>{if(e.key===key)apply(e.newValue==='light'?'light':'dark',false)});})();
 </script></html>
