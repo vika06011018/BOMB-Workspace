@@ -10165,8 +10165,9 @@ html.portal-verifying body:before{content:'正在確認 Portal 登入狀態…';
 html[data-theme=dark].portal-verifying body:before{background:#0b0c0d;color:#edba60}
 </style>
 <script>window.PORTAL_SERVER_LOGIN=true;</script>
-<script src="./assets/workspace-portal-api.js?v=20261023a"></script>
+<script src="./assets/workspace-portal-api.js?v=20261023b"></script>
 <script src="./assets/workspace-auth.js?v=20261023a"></script>
+<script src="./assets/workspace-portal-hr.js?v=20261023b"></script>
 
 <script>
 const $=id=>document.getElementById(id);let previous;
@@ -10212,7 +10213,7 @@ function portalAllowed(id,p){return !!p&&(id==='PEOPLE'?Workspace.isAdmin(p):p.s
 function recentKey(p){return 'bomb-workspace-recent-v1:'+p.id;}
 function renderRecent(){const p=Workspace.current();if(!p)return;let ids=[];try{const saved=JSON.parse(localStorage.getItem(recentKey(p))||'[]');if(Array.isArray(saved))ids=[...new Set(saved)].filter(id=>portalDefinitions.some(d=>d.id===id)&&portalAllowed(id,p)).slice(0,3);}catch{}const container=$('recentSystems');container.replaceChildren();ids.forEach(id=>{const d=portalDefinitions.find(d=>d.id===id);const b=document.createElement('button');b.className='recent-entry';b.type='button';const label=document.createElement('strong');label.textContent=d.name;const note=document.createElement('span');note.textContent=d.note;const arrow=document.createElement('span');arrow.textContent='→';arrow.className='recent-arrow';b.append(label,note,arrow);b.onclick=()=>openPortal(id);container.append(b)});$('noTasks').hidden=ids.length>0;}
 function recordPortal(id){const p=Workspace.current();if(!portalAllowed(id,p))return;try{let ids=JSON.parse(localStorage.getItem(recentKey(p))||'[]');if(!Array.isArray(ids))ids=[];localStorage.setItem(recentKey(p),JSON.stringify([id,...ids.filter(x=>x!==id)].slice(0,3)))}catch{}}
-function openPortal(id){const p=Workspace.current();if(!p){location.replace('./index.html');return}if(!portalAllowed(id,p)){modal('無法進入','目前帳號沒有此入口的權限。');return}if(id==='HR'){modal('HR 入口調整中','正在修正 Portal 與 HR 的身分交接，完成後可直接進入。HR 原本的獨立登入入口保留。');return}if(id==='HR'||id==='WMS'||id==='PEOPLE'||id==='ADMIN'){recordPortal(id);location.href=({HR:'./hr.html',WMS:'./wms.html',PEOPLE:'./people.html',ADMIN:'./admin.html'})[id];return}recordPortal(id);renderRecent();modal(portalDefinitions.find(d=>d.id===id).name,'此入口已預留，作業頁面尚未開放。');}
+function openPortal(id){const p=Workspace.current();if(!p){location.replace('./index.html');return}if(!portalAllowed(id,p)){modal('無法進入','目前帳號沒有此入口的權限。');return}if(id==='HR'){if(typeof Workspace.openHR!=='function'){modal('無法進入 HR','HR 連線程式尚未載入，請按 Ctrl＋F5 重新整理後再試。');return}Workspace.openHR();return}if(id==='HR'||id==='WMS'||id==='PEOPLE'||id==='ADMIN'){recordPortal(id);location.href=({HR:'./hr.html',WMS:'./wms.html',PEOPLE:'./people.html',ADMIN:'./admin.html'})[id];return}recordPortal(id);renderRecent();modal(portalDefinitions.find(d=>d.id===id).name,'此入口已預留，作業頁面尚未開放。');}
 let portalSessionReady=!Workspace.usesServer();
 function showLobby(){if(!portalSessionReady)return false;const p=Workspace.current();if(!p)return false;stopCamera();$('companyName').textContent=p.company+' PORTAL';$('org').textContent=p.company;$('user').textContent=p.account;document.querySelector('.profile .name').textContent=p.name+' · '+Workspace.roles[Workspace.role(p)];document.querySelector('.avatar').textContent=p.name.slice(0,2);document.querySelector('.heading h1').textContent='工作大廳';document.querySelector('.heading p').textContent='選擇系統，開始今天的工作。';const codes=['HR','WMS','ADMIN'];document.querySelectorAll('.cards>[data-system]').forEach(c=>c.hidden=!portalAllowed(c.dataset.system,p));document.querySelector('.section-head span').textContent='已授權 '+codes.filter(x=>p.systems.includes(x)).length+' 個系統';$('sharedManagement').hidden=!Workspace.isAdmin(p);renderRecent();$('login').style.display='none';$('lobby').style.display='block';return true;}
 
