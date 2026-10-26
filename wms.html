@@ -294,9 +294,10 @@ const next=r.boxUnits.find(x=>workMode==='shelf'?!x.shelf:!x.sample);if(next&&ne
 const shelf=area.querySelector('#boxShelf'),sample=area.querySelector('#boxSample');if(shelf)save(shelf,'shelf');if(sample)save(sample,'sample');if(matchMedia('(max-width:700px)').matches)area.scrollIntoView({behavior:'smooth',block:'start'});
 }catch(e){showError(e)}}
 const menu=document.createElement('button');menu.type='button';menu.className='btn receipt-menu-toggle';menu.textContent='☰ 選單';menu.setAttribute('aria-expanded','false');menu.onclick=()=>{const open=document.body.classList.toggle('nav-open');menu.setAttribute('aria-expanded',String(open));};document.querySelector('.top').prepend(menu);const closeMenu=document.createElement('button');closeMenu.type='button';closeMenu.className='btn receipt-menu-close';closeMenu.textContent='關閉選單';closeMenu.onclick=()=>{document.body.classList.remove('nav-open');menu.setAttribute('aria-expanded','false');};document.querySelector('.sidebar').prepend(closeMenu);matchMedia('(min-width:1401px)').addEventListener('change',e=>{const master=host.querySelector('.receipt-master');if(master)master.open=e.matches;});document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.body.classList.remove('nav-open');menu.setAttribute('aria-expanded','false');}});
-window.openCardsReceive=()=>{document.body.classList.add('receipt-view');document.getElementById('crumb').textContent='收貨與上架';document.querySelector('#module>.panel').hidden=true;document.getElementById('pickupApp').hidden=true;host.hidden=false;document.getElementById('title').textContent='收貨與上架';document.getElementById('desc').textContent='選擇收貨單與箱子，進行單箱／批量上架及逐箱抽驗。';arrival();};
-const previousGo=go;go=function(name){batchSession=null;batchSelected.clear();document.body.classList.remove('receipt-view','nav-open');menu.setAttribute('aria-expanded','false');host.hidden=true;previousGo(name)};
+function showReceiveWorkspace(){document.body.classList.add('receipt-view');document.getElementById('crumb').textContent='收貨與上架';document.querySelector('#module>.panel').hidden=true;document.getElementById('pickupApp').hidden=true;host.hidden=false;document.getElementById('title').textContent='收貨與上架';document.getElementById('desc').textContent='選擇收貨單與箱子，進行單箱／批量上架及逐箱抽驗。';arrival();};
+const previousGo=go;go=function(name){batchSession=null;batchSelected.clear();document.body.classList.remove('receipt-view','nav-open');menu.setAttribute('aria-expanded','false');host.hidden=true;previousGo(name);if(name==='收貨與驗貨'&&allowed(name)){showReceiveWorkspace();document.getElementById('desc').textContent='目前提供撲克牌收貨、上架與抽驗原型；一般物品驗貨流程待補齊。';}};
+window.openCardsReceive=()=>go('收貨與驗貨');
+if(initial==='收貨與驗貨'||initial==='收貨與上架')go('收貨與驗貨');
 })();
-</script><script src="./assets/workspace-camera.js"></script></body></html>
-
+</script><script src="./assets/workspace-camera.js"></script><script src="./assets/workspace-import.js"></script></body></html>
 
