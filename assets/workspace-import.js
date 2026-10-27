@@ -601,17 +601,33 @@ window.openTransferRequest=function(){try{transferUser();go('建立單據');tran
 const activeRoute=document.querySelector('#nav button.active')?.dataset.go;if(activeRoute==='建立單據'||activeRoute==='標籤與匯入'||activeRoute==='庫存查詢'||activeRoute==='位置與分類'||activeRoute==='歸還與移轉')go(activeRoute);
 })();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Planning reference stays visible during prototyping; remove this block at technical handoff.
+(function(){
+'use strict';
+const module=document.getElementById('module'),source=document.querySelector('#module>.panel'),items=document.getElementById('items');
+if(!module||!source||!items||document.getElementById('wmsPlanningReference'))return;
+const planning=document.createElement('details');planning.id='wmsPlanningReference';planning.className='wp-planning';planning.open=true;planning.hidden=true;
+const summary=document.createElement('summary');summary.textContent='功能規劃';
+const note=document.createElement('p');note.className='wp-note';note.textContent='以下保留本頁原有規劃，供製作與後續技術交付對照；不代表功能皆已完成，實作狀態以各作業畫面說明為準。';
+const list=document.createElement('div');list.className='wp-list';planning.append(summary,note,list);module.append(planning);
+function syncPlanning(){
+ // The original panel already supplies the planning on unimplemented pages.
+ const show=source.hidden&&items.children.length>0;
+ planning.hidden=!show;
+ if(!show){list.replaceChildren();return;}
+ // Copy plain text only: no duplicated IDs, buttons, handlers or inventory data.
+ list.replaceChildren(...Array.from(items.children,item=>{const row=document.createElement('div');row.textContent=item.textContent;return row;}));
+}
+const observer=new MutationObserver(syncPlanning);
+observer.observe(source,{attributes:true,attributeFilter:['hidden']});
+observer.observe(items,{childList:true,subtree:true,characterData:true});
+const style=document.createElement('style');style.textContent=`
+#wmsPlanningReference{box-sizing:border-box;max-width:1400px;margin:24px 0 0;padding:20px 24px;border:1px solid var(--wg-line,#51432d);border-radius:14px;background:var(--wg-surface,#151719);color:var(--wg-ink,#f1eee8);font-size:16px}
+#wmsPlanningReference[hidden]{display:none!important}
+#wmsPlanningReference>summary{cursor:pointer;font-size:19px;font-weight:700;line-height:1.6;color:var(--wg-gold,#edba60)}
+#wmsPlanningReference .wp-note{margin:14px 0;color:var(--wg-muted,#b8b4ac);font-size:14px;line-height:1.8}
+#wmsPlanningReference .wp-list>div{padding:11px 0;border-top:1px solid var(--wg-line,#51432d);line-height:1.8;overflow-wrap:anywhere}
+#wmsPlanningReference>summary:focus-visible{outline:2px solid var(--wg-gold,#edba60);outline-offset:4px}
+@media(max-width:650px){#wmsPlanningReference{padding:16px;margin-top:18px}}
+`;document.head.append(style);syncPlanning();
+})();
