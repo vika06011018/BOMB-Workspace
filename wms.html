@@ -93,30 +93,173 @@ html .employee-scope{color:var(--wg-gold)!important;background:var(--wg-raised)!
 @media(max-width:700px){#cardsReceive .box-workspace{grid-template-columns:minmax(0,1fr)}#cardsReceive .batch-panel{padding:16px}.inline-camera-frame video{height:160px}#cardsReceive .batch-manual{grid-template-columns:minmax(0,1fr) auto}}
 
 body.receipt-view #module>.intro{display:none}
-</style></head><body><aside class="sidebar"><div class="brand"><svg class="brand-cube" viewBox="0 0 48 52" aria-hidden="true"><path fill="#8ed2ff" d="m24 0 22 12-22 12L2 12Z"/><path fill="#349ced" d="m2 17 19 11v24L2 41Z"/><path fill="#0876d9" d="m27 28 19-11v24L27 52Z"/></svg><div>BOMB<span>WMS 倉儲管理</span></div></div><div class="sub">倉儲工作空間</div><nav class="nav" id="nav" aria-label="倉儲功能選單"></nav><a class="return" href="./index.html#lobby"><svg class="wms-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="2" y="2" width="4" height="4" rx="1"/><rect x="10" y="2" width="4" height="4" rx="1"/><rect x="18" y="2" width="4" height="4" rx="1"/><rect x="2" y="10" width="4" height="4" rx="1"/><rect x="10" y="10" width="4" height="4" rx="1"/><rect x="18" y="10" width="4" height="4" rx="1"/><rect x="2" y="18" width="4" height="4" rx="1"/><rect x="10" y="18" width="4" height="4" rx="1"/><rect x="18" y="18" width="4" height="4" rx="1"/></svg><span>返回工作大廳</span></a></aside><div class="main"><header class="top"><strong id="crumb">倉儲工作台</strong><span>OG · 測試管理者　 <span class="chip">原型預覽</span></span></header><main class="content"><div id="home"><div class="intro"><div><h1>倉儲工作台</h1><p style="margin:0">從今天要做的事開始，掌握物品的每一次移動。</p></div><label style="font-size:13px;color:#8490a4">示範範圍　<select id="scope"><option>全部據點</option><option>總部</option><option>辦公室</option></select></label></div><div class="notice">目前為首頁與功能選單預覽，數量及待辦皆為示範資料。各作業頁面尚未開放填單與正式資料存取。</div><div class="stats" id="stats"></div><div class="section"><h2>常用作業</h2><span style="font-size:12px;color:#929aac">選擇功能查看作業範圍</span></div><div class="quick"><button data-go="申請與提領"><svg class="wms-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h9l5 5v6M14 3v6h5M5 3v18h7m2-3h8m-4-4v8"/></svg><span>領用申請</span><span class="quick-arrow" aria-hidden="true">→</span></button><button data-go="收貨與驗貨"><svg class="wms-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-5 9 5-9 5Zm0 0v10l7 4M12 12v5m3 2 2 2 5-6"/></svg><span>收貨與驗貨</span><span class="quick-arrow" aria-hidden="true">→</span></button><button data-go="盤點作業"><svg class="wms-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="m8 13 3 3 5-6"/></svg><span>開始盤點</span><span class="quick-arrow" aria-hidden="true">→</span></button><button data-go="緊急補登"><svg class="wms-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V3h5m8 0h5v5M3 16v5h5m8 0h5v-5M7 7v10m4-10v10m3-10v10m3-10v10"/></svg><span>手動輸碼補登</span><span class="quick-arrow" aria-hidden="true">→</span></button></div><div class="grid"><section class="panel"><div class="section"><h2>我的待辦</h2><span class="chip">示範資料</span></div><div id="tasks"></div></section><section class="panel"><h2>作業提醒</h2><div class="item"><b>依先進先出提領</b><p>查看系統安排的貨架位置、箱號與數量，再掃箱外QR確認。</p></div><div class="item"><b>驗貨不通過交行政</b><p>現場確認驗貨結果，後續處理由行政人員負責。</p></div><div class="item"><b>備品依盤點掌握數量</b><p>無標籤備品日常領用不逐筆登記；按箱QR管理的物品仍記錄提領。</p></div></section></div></div><section class="module" id="module"><div class="intro"><div><h1 id="title"></h1><p id="desc"></p></div><button class="btn" data-go="倉儲工作台">返回首頁</button></div><div class="panel"><span class="chip">功能規劃</span><h2 style="margin-top:20px">此功能包含</h2><div class="list" id="items"></div><div class="notice" style="margin-bottom:0">本次先確認入口與選單位置，尚未提供此功能的填單、掃碼或資料修改操作。</div></div></section><div class="footer">BOMB WORKSPACE · WMS 首頁與功能選單</div></main></div><script src="./assets/workspace-auth.js"></script><script>
+
+/* Chapter 7 navigation and status presentation. */
+#wmsModuleStatus{max-width:1400px;margin:0 0 20px;padding:0;line-height:1.8;color:var(--wg-muted,#b8b4ac);font-size:14px}
+#wmsModuleStatus[hidden]{display:none!important}
+.nav .nav-group{margin:8px 0;border-top:1px solid var(--wg-line,#51432d);padding-top:6px}
+.nav .nav-group>summary{cursor:pointer;padding:12px 10px;font-size:15px;font-weight:700;color:var(--wg-ink,#f1eee8);line-height:1.5}
+.nav .nav-group>button{padding-left:18px;font-size:14px}
+.nav .nav-group>summary:focus-visible{outline:2px solid var(--wg-gold,#edba60);outline-offset:2px}
+@media(max-width:600px){.nav .nav-group{flex:0 0 auto;min-width:170px;margin:0;padding-top:0;border-top:0}.nav .nav-group>button{width:100%;white-space:normal;min-width:0}.nav .nav-group>summary{min-height:46px}}
+</style></head><body><aside class="sidebar"><div class="brand"><svg class="brand-cube" viewBox="0 0 48 52" aria-hidden="true"><path fill="#8ed2ff" d="m24 0 22 12-22 12L2 12Z"/><path fill="#349ced" d="m2 17 19 11v24L2 41Z"/><path fill="#0876d9" d="m27 28 19-11v24L27 52Z"/></svg><div>BOMB<span>WMS 倉儲管理</span></div></div><div class="sub">倉儲工作空間</div><nav class="nav" id="nav" aria-label="倉儲功能選單"></nav><a class="return" href="./index.html#lobby"><svg class="wms-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="2" y="2" width="4" height="4" rx="1"/><rect x="10" y="2" width="4" height="4" rx="1"/><rect x="18" y="2" width="4" height="4" rx="1"/><rect x="2" y="10" width="4" height="4" rx="1"/><rect x="10" y="10" width="4" height="4" rx="1"/><rect x="18" y="10" width="4" height="4" rx="1"/><rect x="2" y="18" width="4" height="4" rx="1"/><rect x="10" y="18" width="4" height="4" rx="1"/><rect x="18" y="18" width="4" height="4" rx="1"/></svg><span>返回工作大廳</span></a></aside><div class="main"><header class="top"><strong id="crumb">倉儲工作台</strong><span>OG · 測試管理者　 <span class="chip">原型預覽</span></span></header><main class="content"><div id="home"><div class="intro"><div><h1>倉儲工作台</h1><p style="margin:0">從今天要做的事開始，掌握物品的每一次移動。</p></div><label style="font-size:13px;color:#8490a4">示範範圍　<select id="scope"><option>全部據點</option><option>總部</option><option>辦公室</option></select></label></div><div class="notice">目前為首頁與功能選單預覽，數量及待辦皆為示範資料。各作業頁面尚未開放填單與正式資料存取。</div><div class="stats" id="stats"></div><div class="section"><h2>常用作業</h2><span style="font-size:12px;color:#929aac">選擇功能查看作業範圍</span></div><div class="quick"><button data-go="申請與提領"><svg class="wms-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h9l5 5v6M14 3v6h5M5 3v18h7m2-3h8m-4-4v8"/></svg><span>領用申請</span><span class="quick-arrow" aria-hidden="true">→</span></button><button data-go="收貨與驗貨"><svg class="wms-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-5 9 5-9 5Zm0 0v10l7 4M12 12v5m3 2 2 2 5-6"/></svg><span>收貨與驗貨</span><span class="quick-arrow" aria-hidden="true">→</span></button><button data-go="盤點作業"><svg class="wms-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="m8 13 3 3 5-6"/></svg><span>開始盤點</span><span class="quick-arrow" aria-hidden="true">→</span></button><button data-go="緊急補登"><svg class="wms-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V3h5m8 0h5v5M3 16v5h5m8 0h5v-5M7 7v10m4-10v10m3-10v10m3-10v10"/></svg><span>手動輸碼補登</span><span class="quick-arrow" aria-hidden="true">→</span></button></div><div class="grid"><section class="panel"><div class="section"><h2>我的待辦</h2><span class="chip">示範資料</span></div><div id="tasks"></div></section><section class="panel"><h2>作業提醒</h2><div class="item"><b>依先進先出提領</b><p>查看系統安排的貨架位置、箱號與數量，再掃箱外QR確認。</p></div><div class="item"><b>驗貨不通過交行政</b><p>現場確認驗貨結果，後續處理由行政人員負責。</p></div><div class="item"><b>備品依盤點掌握數量</b><p>無標籤備品日常領用不逐筆登記；按箱QR管理的物品仍記錄提領。</p></div></section></div></div><section class="module" id="module"><div class="intro"><div><h1 id="title"></h1><p id="desc"></p></div><button class="btn" data-go="倉儲工作台">返回首頁</button></div><div class="panel"><span class="chip">功能規劃</span><h2 style="margin-top:20px">此功能包含</h2><div class="list" id="items"></div><div class="notice" style="margin-bottom:0">本頁目前僅提供功能規劃，尚未開放此項作業。實作進度會逐項核對，不代表已有正式功能。</div></div></section><div class="footer">BOMB WORKSPACE · WMS 首頁與功能選單</div></main></div><script src="./assets/workspace-auth.js"></script><script>
 const currentOperator=Workspace.guard("WMS");if(!currentOperator)throw new Error("請先登入授權帳號");
 const iconPaths={"dashboard": "<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/>", "clipboard": "<rect x=\"5\" y=\"4\" width=\"14\" height=\"17\" rx=\"2\"/><rect x=\"9\" y=\"2\" width=\"6\" height=\"4\" rx=\"1\"/><path d=\"m8 13 3 3 5-6\"/>", "box": "<path d=\"m3 7 9-5 9 5v10l-9 5-9-5Zm0 0 9 5 9-5M12 12v10M7.5 4.5l9 5\"/>", "receive": "<path d=\"m3 7 9-5 9 5-9 5Zm0 0v10l7 4M12 12v5m3 2 2 2 5-6\"/>", "request": "<path d=\"M5 3h9l5 5v6M14 3v6h5M5 3v18h7m2-3h8m-4-4v8\"/>", "returns": "<path d=\"M3 7h18m-4-4 4 4-4 4M21 17H3m4-4-4 4 4 4\"/>", "stock": "<path d=\"m3 6 7-4 7 4-7 4Zm0 0v9l7 4 3-2M10 10v9\"/><circle cx=\"17\" cy=\"16\" r=\"4\"/><path d=\"m20 19 3 3\"/>", "asset": "<rect x=\"2\" y=\"3\" width=\"20\" height=\"14\" rx=\"2\"/><path d=\"M8 22h8m-4-5v5M6 13h2\"/>", "wrench": "<path d=\"M21 4a6 6 0 0 1-8 8L5 21a2 2 0 0 1-3-3l9-8a6 6 0 0 1 8-8l-4 4 3 3Z\"/>", "warning": "<path d=\"m12 3 10 18H2Z M12 8v6m0 3v1\"/>", "location": "<circle cx=\"12\" cy=\"5\" r=\"3\"/><rect x=\"2\" y=\"17\" width=\"6\" height=\"5\" rx=\"1\"/><rect x=\"16\" y=\"17\" width=\"6\" height=\"5\" rx=\"1\"/><path d=\"M12 8v5M5 17v-4h14v4\"/>", "qr": "<path d=\"M3 8V3h5m8 0h5v5M3 16v5h5m8 0h5v-5\"/><rect x=\"7\" y=\"7\" width=\"3\" height=\"3\"/><rect x=\"14\" y=\"7\" width=\"3\" height=\"3\"/><rect x=\"7\" y=\"14\" width=\"3\" height=\"3\"/><path d=\"M14 14h3v3h-3Z\"/>", "bell": "<path d=\"M5 9a7 7 0 0 1 14 0v7l2 3H3l2-3Zm4 13h6\"/>", "clock": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 6v6l4 3\"/>", "scan": "<path d=\"M3 8V3h5m8 0h5v5M3 16v5h5m8 0h5v-5M7 7v10m4-10v10m3-10v10m3-10v10\"/>"};
 function icon(name){return '<svg class="wms-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(iconPaths[name]||iconPaths.box)+'</svg>';}
 const moduleIcons={"倉儲工作台": "dashboard", "我的任務": "clipboard", "庫存查詢": "stock", "收貨與驗貨": "receive", "申請與提領": "request", "歸還與移轉": "returns", "盤點作業": "clipboard", "備品管理": "box", "資產與配置": "asset", "維修與報廢": "wrench", "緊急補登": "warning", "位置與分類": "location", "標籤與匯入": "qr", "紀錄與通知": "bell"};
 const modules={
-'倉儲工作台':[],
-'建立單據':['依權限建立進貨、領用、入庫、移轉、報廢、維修及借出申請','收貨、驗貨、上架及丟棄確認屬於對應單據的作業步驟','各單據依其流程處理簽核，領用採事後查核','本頁為入口規劃，尚未開放填單'],
-'我的單據':['查看自己建立的單據與目前進度','查看待執行、處理中及已完成紀錄','查看退回原因、執行歷程與相關單據','目前尚未串接個人單據資料'],
-'我的任務':['待執行、執行中及已完成任務','指定儲位補入與目的位置','貨架位置、來源箱號及應領數量','任務進度與操作歷程'],
-'庫存查詢':['依位置、分類與狀態查詢','可領用、已保留及搬運中數量','各箱剩餘數量與入庫順序','查看物品履歷'],
-'收貨與驗貨':['到貨數量及分批收貨','備品到貨盤點與數量確認','非消耗品驗貨通過／不通過','通過後貼QR及上架'],
-'申請與提領':['申請 → 填單 → 送出','送出後依先進先出安排來源並保留數量','按位置與箱號掃QR，按副或個提領','確認目的儲位及交付，不重複扣量'],
-'歸還與移轉':['歸還申請與數量','待驗區收回與後續驗收','原位置與新位置','搬運中物品及授權轉交'],
-'盤點作業':['選擇據點、位置、分類或物品','依當次範圍安排收發貨','實盤、不同人複查及差異調查','保留原始與更正紀錄'],
-'備品管理':['每日各班盤點','到貨登記與上架確認','平均消耗及採購建議','不逐筆記錄日常領用'],
-'資產與配置':['個別資產與持有人','制服尺碼與持有件數','耳機長期配置與歸還','主設備及附屬設備關係'],
-'維修與報廢':['故障登記與維修進度','保養週期及完成紀錄','報廢申請、簽核與留存','最終處置與歷史查詢'],
-'緊急補登':['手動輸入物品識別碼','依拍照或手抄資料找回原物品','補登實際提領內容與使用去向','保留實際作業及補登紀錄'],
-'位置與分類':['企業自訂位置名稱與層級','主分類、子分類與品項','個別、批量與無標籤管理','箱／副等採購與領用單位換算'],
-'標籤與匯入':['物品、箱及位置QR標籤','易辨認箱號與手動備援碼','標籤換發與歷史延續','Excel範例下載與期初匯入'],
-'紀錄與通知':['作業前後資料及數量變動','送單LOG與重複操作核對','到期、逾期與異常通知','跨系統案件關聯']};
+ "倉儲工作台": [],
+ "建立單據": [
+  "第7章共通單據：進貨、領用、入庫、移轉、報廢、維修及借出",
+  "依授權顯示入口；各單據共用狀態與目前步驟的整合尚未完成",
+  "領用為獨立示範資料；移轉已有本機申請與審核，尚未接掃描執行",
+  "通用進貨只提供規劃入口；撲克牌收貨與抽驗原型保留為獨立入口"
+ ],
+ "我的單據": [
+  "第7章共通查詢：依類型、狀態、物品、建立人員與時間查詢",
+  "查看目前步驟、操作人員、逾期與異動履歷",
+  "目前僅列出自己的本機領用示範紀錄，尚未整合所有單據"
+ ],
+ "我的任務": [
+  "第7章共通任務：待執行／執行中，逾期者優先",
+  "首次掃描後記錄執行人，其他人員僅能查看；不預先指定執行人",
+  "主管依時效規則強制結案或改派，填寫原因並留存紀錄",
+  "目前任務與數量仍為示範，未串接正式任務"
+ ],
+ "庫存查詢": [
+  "第7.12章：依位置、分類及物品狀態查看同一份庫存",
+  "分別顯示可用、待驗、待退、領用、維修、借出、保養、運送與報廢留存數量",
+  "第7.12章庫存沖正須有授權、前後數值與原因，保留原始紀錄",
+  "目前可查詢與補齊Excel匯入資料，尚非完整狀態庫存帳本"
+ ],
+ "收貨與驗貨": [
+  "第7.6章的撲克牌特殊流程試作，不代表通用進貨管理已完成",
+  "保留到貨、每箱QR與6碼、先貼標上架，再逐箱抽驗8副的流程",
+  "一般物品需先待驗、驗貨合格再上架；不得套用撲克牌例外",
+  "本機收貨資料尚未接通採購、供應商主檔、匯入庫存及正式領用"
+ ],
+ "申請與提領": [
+  "第7.7章：依分類與品項建立領用，支援個別或批量、地點或人員",
+  "可依最初入庫時間建議先進先出，或指定物品／批次",
+  "領用免事前審核，完成後由SM事後查核；撤下項目與綁定數量限制尚待實作",
+  "依已確認規則：倉庫到N櫃或其他倉外位置使用領用單",
+  "目前只提供固定商品及目的地的獨立示範流程，未扣減Excel匯入庫存"
+ ],
+ "歸還與移轉": [
+  "第7.9章：歸還先送待驗區，驗收通過並上架後才增加可用庫存",
+  "移轉依已確認規則：倉內貨架間，或倉外位置／持有人之間調度",
+  "移轉須先申請、主管審核、現場掃描執行，再更新位置／持有人",
+  "歸還目前只有版面；移轉已有本機申請與審核，受位置檢核限制且尚未改動庫存"
+ ],
+ "盤點作業": [
+  "第7.13章：依現場需求發起，範圍與狀態深度可組合",
+  "實盤填報、不同人複查、異常調查與三選一結案",
+  "調查中的範圍暫時排除，原始紀錄保留；依13.6倉儲日誌追查",
+  "無標籤備品依7.2.1每日三班盤點另行管理；本功能尚未實作"
+ ],
+ "備品管理": [
+  "第7.2.1章：無標籤消耗品使用獨立備品管理",
+  "PB或指定人員每日三班盤點；到貨以數量及日期登記",
+  "消耗量＝前次盤點＋期間進貨－本次盤點，依近N天平均量估算採購建議",
+  "不走一般領用、入庫、NFC／QR或身上貨品追蹤",
+  "盤點、進貨登記、消耗與採購建議及13.6日誌均尚未實作"
+ ],
+ "資產與配置": [
+  "第7.4、7.2.2、7.2.3及7.14.1章的既有彙總規劃入口保留",
+  "制服管理、無線電耳機管理與設備技術資料已列為獨立規劃入口",
+  "各入口須引用共用品項、分類與庫存，不另建立互不相通的數量",
+  "目前沒有實際配發、持有或設備主檔功能"
+ ],
+ "維修與報廢": [
+  "第7.10章：報廢申請、主管簽核、報廢留存、期限與丟棄確認，歷史保留",
+  "第7.11章：送修申請、主管審核、送修、取回驗收與上架",
+  "維修與借出不計入可用庫存；非故障外借另由借出管理處理",
+  "需保養分類須連動實際保養任務；目前維修、報廢與保養均尚未實作"
+ ],
+ "緊急補登": [
+  "第7.5.1章識別備援與相關作業紀錄的既有入口保留",
+  "一般倉儲以QR為主、手動6碼備援；NFC三層只用於適用物品／流程",
+  "備援應回到原單據或物品流程，記錄載體與原因，不另造一份庫存",
+  "完整補登與13.7識別日誌尚未實作"
+ ],
+ "位置與分類": [
+  "第7.1章：國家、區域、廳別、組別／貨架、桌別／櫃位與貨架設定",
+  "第7.2章：主分類、子分類、識別方式、配發對象、採購與保養規則",
+  "既有A倉至F倉與底下位置保留，正式層級關係未確認前不自動搬入",
+  "目前提供上層預覽、倉別／位置與貨架本機設定、分類本機管理",
+  "貨架本機QR＋6碼可產生、查找、預覽及列印；正式跨裝置資料與品項分類連動尚未接通"
+ ],
+ "標籤與匯入": [
+  "第7.5與7.6.1章：識別映射、物品建檔及標籤產製；7.1貨架標籤由位置管理操作",
+  "保留既有Excel直接上傳、整理、預覽確認，不要求逐筆改套固定範本",
+  "原位置與單位缺漏保留待確認，匯入來源與既有資料保留",
+  "物品標籤、補印／換發與正式API尚未完整實作；後端匯入驗證前保留本機寫入"
+ ],
+ "紀錄與通知": [
+  "第7章作業履歷與第13.6倉儲異動、第13.7識別操作日誌對照",
+  "保留單據步驟、人員時間、前後位置／數量、識別碼延續與調整原因",
+  "逾期、庫存、人員離職未歸還與適用的識別降級告警，依第8.4.3章連動",
+  "目前只有部分本機作業各自保存紀錄，統一日誌與告警尚未接通"
+ ],
+ "物品管理": [
+  "第7.4章：物品名稱／編號、主分類／子分類、狀態、位置與時間查詢",
+  "顯示個別或批量數量、目前狀態、位置、持有人及完整生命週期履歷",
+  "不在本頁新增物品或產製標籤；物品建檔及標籤產製依7.6.1處理",
+  "本頁尚未實作；現有匯入清單請由庫存查詢查看"
+ ],
+ "進貨管理": [
+  "第7.6章：日常用品採購申請與行政審核、設備訂購記錄",
+  "到貨待驗、分批收貨與差異、驗貨、入庫／驗退及數量更正",
+  "第7.6.1章：依個別或批量規則建立品項及產製識別標籤",
+  "無標籤備品依7.2.1專用進貨登記；撲克牌使用保留的特殊收貨／抽驗流程",
+  "本頁尚未實作通用進貨；撲克牌原型不代表一般進貨已完成"
+ ],
+ "退貨管理": [
+  "第7.8章：供應商召回與新進物品驗退，依單據適用規則處理審核",
+  "執行退貨出庫、待退與已退狀態及庫存／履歷連動",
+  "舊物品歸還驗收不合格不自動套用新進驗退流程",
+  "本功能尚未實作"
+ ],
+ "借出管理": [
+  "第7.11章：非故障的外借測試／評估，由後台搜尋物品建單",
+  "主管審核後到平板掃描執行，借出中不計入可用庫存",
+  "歸還驗收通過後上架；驗收不通過轉適用的維修或報廢流程",
+  "本功能尚未實作，與故障送修分開管理"
+ ],
+ "制服管理": [
+  "第7.2.2章：制服子分類依公司實際需求自行建立，不預設職位／性別／服裝組合",
+  "公版款使用共用尺碼池、每人2套基準；不綁定個別實體件、不追蹤個人持有",
+  "訂製款以分類持有人員清單記錄，不綁定特定實體件",
+  "提供依分類／人員總覽，串接9.8人資異動提醒與8.4.3告警",
+  "本功能尚未實作；目前分類中的制服與角色欄位僅保存設定"
+ ],
+ "無線電耳機管理": [
+  "第7.2.3章：分類設定為個別識別標籤、QR兩層、配發對象為人員",
+  "PB／SM於平板建領用申請，領取掃描後記錄每支耳機對應人員",
+  "歸還掃描確認後解除綁定；離職／轉調提示與未歸還告警",
+  "使用共用品項、分類、領用與歸還資料；本功能尚未實作"
+ ],
+ "特殊物品分類": [
+  "第7.3章：撲克牌、牌盒、牌靴、球盒、備用牌、折損牌、練習牌及報廢牌",
+  "相關業務啟用後使用系統固定分類，不可任意修改或刪除",
+  "保留第6章洗牌房與機械手臂相關識別、位置及生命週期規則",
+  "其他公司依業務需要啟用；目前尚未實作公司模組設定與完整固定分類"
+ ],
+ "廠商管理": [
+  "第7.14章：廠商編號、類型、名稱、聯絡人、電話、信箱、備註及啟停用",
+  "類型可依公司需求擴充，供進貨、退貨、維修及相關設備引用",
+  "停用與引用歷史需保留，不用手填供應商取代正式主檔關係",
+  "本功能尚未實作"
+ ],
+ "設備技術資料": [
+  "第7.14.1章：設備編號、類型、名稱、廠商、型號、序號、保固與技術歷程",
+  "設備編號與7.2物品分類下品項互相對應，數量／位置／生命週期用同一套物品資料",
+  "採購設備序號與保固依7.6驗貨帶入；手動新增用於舊設備或非採購來源",
+  "本功能尚未實作，不另設一套設備庫存"
+ ]
+};
 const descriptions={'我的任務':'先看要做什麼，再進入對應作業。','庫存查詢':'知道物品在哪裡、剩多少，以及目前能不能領。','申請與提領':'來源箱與目的儲位分開記錄，櫃位名稱由企業自訂。','備品管理':'無標籤備品與需掃碼扣量的批量物品分開管理。','緊急補登':'緊急先使用，事後依識別碼補登。'};
-const grants={'我的任務':'tasks','庫存查詢':'stock','收貨與驗貨':'receive','申請與提領':'request','歸還與移轉':'returns','盤點作業':'count','備品管理':'count','資產與配置':'stock','維修與報廢':'approve','緊急補登':'emergency','位置與分類':'master','標籤與匯入':'master','紀錄與通知':'tasks'};
+const grants={'我的任務':'tasks','庫存查詢':'stock','收貨與驗貨':'receive','申請與提領':'request','歸還與移轉':'returns','盤點作業':'count','備品管理':'count','資產與配置':'stock','維修與報廢':'approve','緊急補登':'emergency','位置與分類':'master','標籤與匯入':'master','紀錄與通知':'tasks','物品管理':'stock','進貨管理':'receive','退貨管理':'approve','借出管理':'approve','制服管理':'stock','無線電耳機管理':'stock','特殊物品分類':'master','廠商管理':'master','設備技術資料':'stock'};
 function allowed(name){const p=Workspace.current();if(p&&p.systems.includes('WMS')&&name==='我的單據')return true;if(p&&p.systems.includes('WMS')&&name==='建立單據')return ['request','returns','receive','approve','dispatch'].some(g=>p.permissions.includes(g));return !!p&&p.systems.includes('WMS')&&(name==='倉儲工作台'||(name==='申請與提領'&&(p.permissions.includes('request')||p.permissions.includes('pickup')))||p.permissions.includes(grants[name]));}
 const role=Workspace.role(currentOperator);
 const homeTitle=({employee:'我的工作',sm:'現場管理工作台',executive:'倉儲管理總覽',admin:'行政倉儲工作台'})[role]||'倉儲工作台';
@@ -124,6 +267,21 @@ const employeeHome=role==='employee';
 const $=id=>document.getElementById(id);
 function displayName(name){return employeeHome?({'我的任務':'我的待辦','庫存查詢':'庫存與位置查詢'}[name]||name):name;}
 moduleIcons['建立單據']='request';moduleIcons['我的單據']='clipboard';
+Object.assign(moduleIcons,{'物品管理':'box','進貨管理':'receive','退貨管理':'returns','借出管理':'returns','制服管理':'asset','無線電耳機管理':'asset','特殊物品分類':'box','廠商管理':'asset','設備技術資料':'asset'});
+const navLabels={'收貨與驗貨':'撲克牌收貨與抽驗','申請與提領':'領用申請與提領'};
+const moduleStatus={
+'建立單據':'部分入口可操作；領用仍為獨立示範，移轉尚未接執行。',
+'我的單據':'目前僅顯示本機領用示範紀錄，尚未整合其他單據。',
+'我的任務':'目前為示範，尚未接通實際任務。',
+'庫存查詢':'可查詢與補齊本機匯入資料，完整庫存狀態尚未接通。',
+'收貨與驗貨':'目前僅提供撲克牌收貨、上架與抽驗的本機原型。',
+'申請與提領':'固定商品與目的地的領用示範，尚未連接匯入庫存。',
+'歸還與移轉':'歸還尚未開放；移轉已有本機申請與審核，尚未執行庫存異動。',
+'位置與分類':'提供本機位置、貨架標籤與分類設定；正式資料連動尚未完成。',
+'標籤與匯入':'Excel可整理、預覽並寫入本機；物品標籤管理尚未完整接通。'
+};
+const moduleStatusNode=document.createElement('p');moduleStatusNode.id='wmsModuleStatus';moduleStatusNode.setAttribute('role','status');document.querySelector('#module>.intro').after(moduleStatusNode);
+
 if(employeeHome){
  document.body.classList.add('employee-home');
  document.querySelector('.sidebar .sub').textContent='我的 WMS 工作空間';
@@ -143,22 +301,24 @@ if(employeeHome){
  reminders.forEach((e,i)=>{e.querySelector('b').textContent=messages[i][0];e.querySelector('p').textContent=messages[i][1]});
  document.querySelector('#home .grid .panel:nth-child(2) h2').textContent='工作小提醒';
 }
-document.querySelector('.top>span').textContent=currentOperator.name+' · '+Workspace.roles[Workspace.role(currentOperator)]+'｜本機原型';document.querySelector('#home h1').textContent=({'employee':'我的工作','sm':'現場管理工作台','executive':'倉儲管理總覽','admin':'行政倉儲工作台'})[Workspace.role(currentOperator)];Object.keys(modules).forEach(name=>{if(!allowed(name))return;let b=document.createElement('button');b.innerHTML=icon(moduleIcons[name]);const label=document.createElement('span');label.textContent=name==='倉儲工作台'?homeTitle:displayName(name);b.append(label);b.dataset.go=name;$('nav').appendChild(b)});
+document.querySelector('.top>span').textContent=currentOperator.name+' · '+Workspace.roles[Workspace.role(currentOperator)]+'｜本機原型';document.querySelector('#home h1').textContent=({'employee':'我的工作','sm':'現場管理工作台','executive':'倉儲管理總覽','admin':'行政倉儲工作台'})[Workspace.role(currentOperator)];Object.keys(modules).forEach(name=>{if(!allowed(name))return;let b=document.createElement('button');b.innerHTML=icon(moduleIcons[name]);const label=document.createElement('span');label.textContent=name==='倉儲工作台'?homeTitle:(navLabels[name]||displayName(name));b.append(label);b.dataset.go=name;$('nav').appendChild(b)});
 
-if(employeeHome){
- const nav=$('nav');const primary=['倉儲工作台','我的任務','建立單據','庫存查詢','我的單據'];
- const buttons=Array.from(nav.querySelectorAll('button'));
- const group=document.createElement('details');group.className='nav-group';const summary=document.createElement('summary');summary.textContent='其他作業';group.append(summary);
- primary.forEach(name=>{const b=buttons.find(x=>x.dataset.go===name);if(b)nav.append(b)});
- buttons.filter(b=>!primary.includes(b.dataset.go)).forEach(b=>group.append(b));
- if(group.querySelector('button'))nav.append(group);
- nav.addEventListener('click',e=>{if(e.target.closest('button')&&!e.target.closest('.nav-group'))group.open=false});
+// Navigation groups change presentation only; data-go route names and existing permissions remain intact.
+{
+ const nav=$('nav'),buttons=Array.from(nav.querySelectorAll('button')),primary=['倉儲工作台','我的任務','建立單據','我的單據'];
+ if(employeeHome)primary.splice(3,0,'庫存查詢');
+ const groups=[['基本資料',['位置與分類','物品管理','特殊物品分類','廠商管理','設備技術資料','標籤與匯入']],['日常倉儲',['進貨管理','收貨與驗貨','申請與提領','歸還與移轉','退貨管理','維修與報廢','借出管理','盤點作業','庫存查詢']],['備品與人員配發',['備品管理','制服管理','無線電耳機管理','資產與配置']],['紀錄與輔助',['紀錄與通知','緊急補登']]];
+ const used=new Set();nav.replaceChildren();
+ for(const name of primary){const button=buttons.find(x=>x.dataset.go===name);if(button){nav.append(button);used.add(name);}}
+ for(const [title,names] of groups){const group=document.createElement('details');group.className='nav-group';const summary=document.createElement('summary');summary.textContent=title;group.append(summary);for(const name of names){if(used.has(name))continue;const button=buttons.find(x=>x.dataset.go===name);if(button){group.append(button);used.add(name);}}if(group.querySelector('button'))nav.append(group);}
+ // Preserve any future authorized routes that have not yet been assigned a group.
+ for(const button of buttons)if(!used.has(button.dataset.go))nav.append(button);
 }
 
-function go(name){if(!Workspace.current()){location.replace('./index.html');return}if(!allowed(name))name='倉儲工作台';if(!Object.hasOwn(modules,name))name='倉儲工作台';document.querySelectorAll('#nav button').forEach(b=>{b.classList.toggle('active',b.dataset.go===name);b.setAttribute('aria-current',b.dataset.go===name?'page':'false')});const selected=document.querySelector('#nav button.active');if(selected&&selected.closest('details'))selected.closest('details').open=true;$('crumb').textContent=name==='倉儲工作台'?homeTitle:displayName(name);let home=name==='倉儲工作台';$('home').style.display=home?(employeeHome?'flex':'block'):'none';$('module').style.display=home?'none':'block';$('title').textContent=displayName(name);$('desc').textContent=descriptions[name]||'依企業權限與管理範圍，處理相關倉儲工作。';$('items').replaceChildren(...modules[name].map(s=>{let e=document.createElement('div');e.textContent=s;return e}));history.replaceState(null,'','#'+encodeURIComponent(name));window.scrollTo(0,0)}
+function go(name){if(!Workspace.current()){location.replace('./index.html');return}if(!allowed(name))name='倉儲工作台';if(!Object.hasOwn(modules,name))name='倉儲工作台';document.querySelectorAll('#nav button').forEach(b=>{b.classList.toggle('active',b.dataset.go===name);b.setAttribute('aria-current',b.dataset.go===name?'page':'false')});const selected=document.querySelector('#nav button.active');if(selected&&selected.closest('details'))selected.closest('details').open=true;$('crumb').textContent=name==='倉儲工作台'?homeTitle:displayName(name);let home=name==='倉儲工作台';$('home').style.display=home?(employeeHome?'flex':'block'):'none';$('module').style.display=home?'none':'block';$('title').textContent=displayName(name);$('desc').textContent=descriptions[name]||'依企業權限與管理範圍，處理相關倉儲工作。';$('items').replaceChildren(...modules[name].map(s=>{let e=document.createElement('div');e.textContent=s;return e}));moduleStatusNode.hidden=home;moduleStatusNode.textContent=home?'':'目前狀態：'+(moduleStatus[name]||'尚未實作，目前僅提供下方功能規劃。');history.replaceState(null,'','#'+encodeURIComponent(name));window.scrollTo(0,0)}
 document.addEventListener('click',e=>{let b=e.target.closest('[data-go]');if(b)go(b.dataset.go)});
 const datasets={'全部據點':[3,2,1,0],'總部':[2,2,1,0],'辦公室':[1,0,0,0]};
-function render(){let a=datasets[$('scope').value];$('stats').innerHTML=['待提領任務','待驗貨案件','待盤點任務','逾期任務'].map((s,i)=>`<div class="stat"><div class="stat-icon stat-icon-${i}">${icon(['box','receive','clipboard','clock'][i])}</div><small>${s}</small><strong>${a[i]}</strong><span>${employeeHome?'個人任務示意':'目前範圍 · 示範'}</span></div>`).join('');let tasks=$('scope').value==='辦公室'?[['設備領用','辦公室 · 待提領','申請與提領']]:[['指定儲位補入','總部 · 等待提領確認','我的任務'],['新到設備驗貨','總部待驗區 · 2件','收貨與驗貨'],['備品區盤點','總部 · 待執行','盤點作業']];$('tasks').innerHTML=tasks.filter(t=>allowed(t[2])).map(([a,b,c])=>`<div class="task"><div><strong>${a}</strong><p>${b}</p></div><button class="btn" data-go="${c}">${employeeHome?'查看作業':'查看範圍'}</button></div>`).join('')}
+function render(){let a=datasets[$('scope').value];$('stats').innerHTML=['待提領任務','待驗貨案件','待盤點任務','逾期任務'].map((s,i)=>`<div class="stat"><div class="stat-icon stat-icon-${i}">${icon(['box','receive','clipboard','clock'][i])}</div><small>${s}</small><strong>${a[i]}</strong><span>${employeeHome?'個人任務示意':'目前範圍 · 示範'}</span></div>`).join('');let tasks=$('scope').value==='辦公室'?[['設備領用','辦公室 · 待提領','申請與提領']]:[['指定儲位補入','總部 · 等待提領確認','我的任務'],['撲克牌收貨與抽驗','本機原型 · 待處理示意','收貨與驗貨'],['備品區盤點','總部 · 待執行','盤點作業']];$('tasks').innerHTML=tasks.filter(t=>allowed(t[2])).map(([a,b,c])=>`<div class="task"><div><strong>${a}</strong><p>${b}</p></div><button class="btn" data-go="${c}">${employeeHome?'查看作業':'查看範圍'}</button></div>`).join('')}
 $('scope').onchange=render;render();document.querySelectorAll('[data-go]').forEach(b=>b.hidden=!allowed(b.dataset.go));let initial='';try{initial=decodeURIComponent(location.hash.slice(1))}catch{}go(initial);window.addEventListener('pageshow',()=>Workspace.guard('WMS'));window.addEventListener('storage',()=>location.reload());
 </script><script>
 /* Shared display preference; existing navigation and permissions retained. */
@@ -201,7 +361,7 @@ btn.onclick=()=>{try{const p=access();if(p.id!==draft.personId)throw Error('登�
 }catch(e){shell('<section class="panel"><h2>暫時無法建立領用單</h2></section>');error(e)}
 }
 function choose(){
-const p=person();shell('<section class="panel"><h2>選擇單據類型</h2><p>依本次物品作業選擇單據。</p><div class="document-types">'+[['領用','領取物品並送至指定位置',p.permissions.includes('request')],['進貨','撲克牌到貨與驗貨',p.permissions.includes('receive')],['入庫','物品送回倉庫',false],['移轉','建立位置移轉申請',typeof window.openTransferRequest==='function'&&p.permissions.includes('stock')&&p.permissions.some(g=>['returns','dispatch','approve'].includes(g))],['報廢','物品報銷與留存處理',false],['維修','故障物品送修',false],['借出','非故障物品外借測試／確認',false]].map(([name,note,ready])=>'<button class="doc-type" type="button" '+(ready?(name==='進貨'?'id="openReceive"':name==='移轉'?'id="openTransfer"':'id="openPickup"'):'disabled')+'><strong>'+name+'單</strong><span>'+note+'</span><small>'+(ready?'新增單據':name==='領用'?'未授權':'尚未開放')+'</small></button>').join('')+'</div></section>');const transfer=mount.querySelector('#openTransfer');if(transfer)transfer.onclick=()=>window.openTransferRequest();const receive=mount.querySelector('#openReceive');if(receive)receive.onclick=()=>window.openCardsReceive();const open=mount.querySelector('#openPickup');if(open)open.onclick=()=>{opened=true;step=1;draft=null;completed=null;document.getElementById('title').textContent='新增領用單';draw()};}
+const p=person();shell('<section class="panel"><h2>選擇單據類型</h2><p>依本次物品作業選擇單據。</p><div class="document-types">'+[['領用','領取物品並送至指定位置',p.permissions.includes('request')],['進貨','通用採購、訂購與驗貨流程（規劃）',p.permissions.includes('receive')],['入庫','物品送回倉庫',false],['移轉','建立位置移轉申請',typeof window.openTransferRequest==='function'&&p.permissions.includes('stock')&&p.permissions.some(g=>['returns','dispatch','approve'].includes(g))],['報廢','物品報銷與留存處理',false],['維修','故障物品送修',false],['借出','非故障物品外借測試／確認',false]].map(([name,note,ready])=>'<button class="doc-type" type="button" '+(ready?(name==='進貨'?'id="openReceive"':name==='移轉'?'id="openTransfer"':'id="openPickup"'):'disabled')+'><strong>'+name+'單</strong><span>'+note+'</span><small>'+(ready?(name==='進貨'?'查看規劃':'新增單據'):name==='領用'?'未授權':'尚未開放')+'</small></button>').join('')+'</div></section>');const transfer=mount.querySelector('#openTransfer');if(transfer)transfer.onclick=()=>window.openTransferRequest();const receive=mount.querySelector('#openReceive');if(receive)receive.onclick=()=>go('進貨管理');const open=mount.querySelector('#openPickup');if(open)open.onclick=()=>{opened=true;step=1;draft=null;completed=null;document.getElementById('title').textContent='新增領用單';draw()};}
 function scan(kind,expected,target,onSuccess){
 const dialog=document.createElement('dialog');dialog.className='qr-dialog';dialog.innerHTML='<div class="qr-dialog-head"><h2>掃描'+kind+' QR</h2><button class="btn" type="button" id="closeScan" aria-label="關閉掃碼視窗">關閉</button></div><div class="qr-dialog-body"><div class="qr-target" aria-hidden="true"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 30V5h25m40 0h25v25M5 70v25h25m40 0h25V70"/><path d="M18 50h64" stroke-dasharray="4 4"/></svg><span>等待識別碼</span></div><p>使用掃描器輸入，或手動填入識別碼。也可按「開啟相機掃碼」使用相機。</p><label>識別碼<input id="scanValue" autocomplete="off" placeholder="請掃描或輸入識別碼"></label><p id="scanFeedback" role="status" aria-live="polite">請核對本次指定的'+kind+'。</p><div class="pickup-actions"><button class="btn" type="button" id="simulateScan">模擬掃描正確 QR</button><button class="btn pickup-primary" type="button" id="confirmScan" disabled>確認辨識</button></div></div>';
 document.body.append(dialog);const input=dialog.querySelector('#scanValue'),confirm=dialog.querySelector('#confirmScan'),status=dialog.querySelector('#scanFeedback');
@@ -300,5 +460,6 @@ window.openCardsReceive=()=>go('收貨與驗貨');
 if(initial==='收貨與驗貨'||initial==='收貨與上架')go('收貨與驗貨');
 })();
 </script><script src="./assets/workspace-camera.js"></script><script src="./assets/workspace-import.js"></script></body></html>
+
 
 
