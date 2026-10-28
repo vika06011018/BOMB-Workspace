@@ -308,23 +308,23 @@ window.addEventListener('storage',event=>{if(!settingsRoot.hidden&&settingsAutho
 
 // Chapter 7.1 upper-location fields: preview only until the location API is connected.
 const upperLocationPanel=el('section');upperLocationPanel.id='siUpperLocation';
-upperLocationPanel.innerHTML='<div class="su-head"><h3>上層地區設定</h3><span class="su-badge">欄位預覽・尚未儲存</span></div><p>第 7.1 章位置層級：國家 → 區域 → 廳別 → 組別／貨架 → 桌別／櫃位。</p><div class="su-fields"><label for="suCountry">國家</label><input id="suCountry" maxlength="100" autocomplete="off" placeholder="輸入國家名稱"><label for="suRegion">區域</label><input id="suRegion" maxlength="100" autocomplete="off" placeholder="輸入該國家下的區域"><label for="suHall">廳別名稱</label><input id="suHall" maxlength="100" autocomplete="off" placeholder="輸入實際廳別名稱"><label for="suHallType">廳別類型</label><select id="suHallType"></select><label for="suCustomType" id="suCustomLabel" hidden>自訂類型名稱</label><input id="suCustomType" maxlength="100" hidden placeholder="輸入自訂廳別類型"><span>對應現有倉別</span><output id="suWarehouse">請先選擇倉別</output></div><div class="su-actions"><button class="btn" id="suPreview" type="button">預覽對應</button><button class="btn" id="suReset" type="button">清空填寫</button></div><p id="suError" role="alert"></p><div id="suPreviewBox" hidden><h4>待確認的位置對應</h4><dl><dt>上層位置</dt><dd id="suPath"></dd><dt>廳別類型</dt><dd id="suTypePreview"></dd><dt>現有倉別</dt><dd id="suWarehousePreview"></dd></dl></div><p class="su-note">僅供預覽，尚未儲存；重新整理後填寫內容不保留。</p>';
+upperLocationPanel.innerHTML='<div class="su-head"><h3>上層地區設定</h3><span class="su-badge">欄位預覽・尚未儲存</span></div><p>第 7.1 章位置層級：國家 → 區域 → 廳別 → 組別／貨架 → 桌別／櫃位。</p><div class="su-fields"><label for="suCountry">國家</label><input id="suCountry" maxlength="100" autocomplete="off" placeholder="輸入國家名稱"><label for="suRegion">區域</label><input id="suRegion" maxlength="100" autocomplete="off" placeholder="輸入該國家下的區域"><label for="suHall">廳別</label><select id="suHall"></select><label for="suCustomHall" id="suCustomLabel" hidden>自訂廳別名稱</label><input id="suCustomHall" maxlength="100" hidden placeholder="輸入自訂廳別名稱"><span>對應現有倉別</span><output id="suWarehouse">請先選擇倉別</output></div><div class="su-actions"><button class="btn" id="suPreview" type="button">預覽對應</button><button class="btn" id="suReset" type="button">清空填寫</button></div><p id="suError" role="alert"></p><div id="suPreviewBox" hidden><h4>待確認的位置對應</h4><dl><dt>上層位置</dt><dd id="suPath"></dd><dt>現有倉別</dt><dd id="suWarehousePreview"></dd></dl></div><p class="su-note">僅供預覽，尚未儲存；重新整理後填寫內容不保留。</p>';
 settingsRoot.querySelector('.ss-layout').prepend(upperLocationPanel);
 const su=id=>upperLocationPanel.querySelector('#'+id);
-const HALL_TYPES=['遊戲廳－棚1','遊戲廳－棚2','彈珠賽車區','機械手臂區','洗牌房','倉庫','辦公室','值班室','會議室','備品室','培訓室','員工休息室'];
-su('suHallType').replaceChildren(new Option('請選擇廳別類型',''),...HALL_TYPES.map((type,index)=>new Option(type,String(index))),new Option('＋ 自訂類型','custom'));
+const HALL_OPTIONS=['遊戲廳－棚1','遊戲廳－棚2','彈珠賽車區','機械手臂區','洗牌房','倉庫','辦公室','值班室','會議室','備品室','培訓室','員工休息室'];
+su('suHall').replaceChildren(new Option('請選擇廳別',''),...HALL_OPTIONS.map((type,index)=>new Option(type,String(index))),new Option('＋ 自訂廳別','custom'));
 let upperLocationScope=null;
-function resetUpperLocation(){for(const id of ['suCountry','suRegion','suHall','suCustomType'])su(id).value='';su('suHallType').value='';su('suCustomType').hidden=su('suCustomLabel').hidden=true;su('suPreviewBox').hidden=true;su('suError').textContent='';for(const id of ['suPath','suTypePreview','suWarehousePreview'])su(id).textContent='';}
+function resetUpperLocation(){for(const id of ['suCountry','suRegion','suCustomHall'])su(id).value='';su('suHall').value='';su('suCustomHall').hidden=su('suCustomLabel').hidden=true;su('suPreviewBox').hidden=true;su('suError').textContent='';for(const id of ['suPath','suWarehousePreview'])su(id).textContent='';}
 function renderUpperLocation(){const scope=ownerScope()+'\n'+(settingsWarehouse||'');if(scope!==upperLocationScope){resetUpperLocation();upperLocationScope=scope;}su('suWarehouse').textContent=settingsWarehouse||'請先選擇倉別';su('suPreview').disabled=!settingsWarehouse;}
 function upperLocationPreview(values,warehouse){
  if(!warehouse)throw Error('請先選擇現有倉別。');
- const result={};for(const [key,label] of [['country','國家'],['region','區域'],['hall','廳別名稱'],['hallType','廳別類型']]){const value=norm(values[key]);if(!value||value.length>100)throw Error('請填寫'+label+'，最多 100 字。');result[key]=value;}
+ const result={};for(const [key,label] of [['country','國家'],['region','區域'],['hall','廳別']]){const value=norm(values[key]);if(!value||value.length>100)throw Error('請填寫'+label+'，最多 100 字。');result[key]=value;}
  return {...result,warehouse};
 }
-function previewUpperLocation(){try{if(!settingsAuthorized())throw Error('目前帳號沒有位置設定權限。');const scope=ownerScope()+'\n'+(settingsWarehouse||'');if(scope!==upperLocationScope){renderUpperLocation();throw Error('登入身分或倉別已變更，請重新填寫。');}const value=su('suHallType').value,type=value==='custom'?su('suCustomType').value:/^\d+$/.test(value)?HALL_TYPES[Number(value)]:'',p=upperLocationPreview({country:su('suCountry').value,region:su('suRegion').value,hall:su('suHall').value,hallType:type},settingsWarehouse);su('suPath').textContent=p.country+' → '+p.region+' → '+p.hall;su('suTypePreview').textContent=p.hallType;su('suWarehousePreview').textContent=p.warehouse+'（僅預覽，尚未建立對應）';su('suPreviewBox').hidden=false;su('suError').textContent='';}catch(error){su('suPreviewBox').hidden=true;su('suError').textContent=error.message;}}
+function previewUpperLocation(){try{if(!settingsAuthorized())throw Error('目前帳號沒有位置設定權限。');const scope=ownerScope()+'\n'+(settingsWarehouse||'');if(scope!==upperLocationScope){renderUpperLocation();throw Error('登入身分或倉別已變更，請重新填寫。');}const value=su('suHall').value,type=value==='custom'?su('suCustomHall').value:/^\d+$/.test(value)?HALL_OPTIONS[Number(value)]:'',p=upperLocationPreview({country:su('suCountry').value,region:su('suRegion').value,hall:type},settingsWarehouse);su('suPath').textContent=p.country+' → '+p.region+' → '+p.hall;su('suWarehousePreview').textContent=p.warehouse+'（僅預覽，尚未建立對應）';su('suPreviewBox').hidden=false;su('suError').textContent='';}catch(error){su('suPreviewBox').hidden=true;su('suError').textContent=error.message;}}
 su('suPreview').onclick=previewUpperLocation;su('suReset').onclick=resetUpperLocation;
 upperLocationPanel.addEventListener('input',()=>{su('suPreviewBox').hidden=true;su('suError').textContent='';});
-su('suHallType').onchange=()=>{const custom=su('suHallType').value==='custom';su('suCustomType').hidden=su('suCustomLabel').hidden=!custom;su('suPreviewBox').hidden=true;su('suError').textContent='';};
+su('suHall').onchange=()=>{const custom=su('suHall').value==='custom';su('suCustomHall').hidden=su('suCustomLabel').hidden=!custom;su('suPreviewBox').hidden=true;su('suError').textContent='';};
 const upperStyle=el('style');upperStyle.textContent=`
 #siUpperLocation{min-width:0;box-sizing:border-box;margin:0;padding:22px;border:1px solid var(--wg-line,#51432d);border-radius:14px;background:var(--wg-surface,#151719)}
 #siUpperLocation .su-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}#siUpperLocation .su-head h3{margin:0}#siUpperLocation .su-badge{font-size:13px;color:var(--wg-muted,#b8b4ac)}
@@ -735,6 +735,7 @@ const style=document.createElement('style');style.textContent=`
 @media(max-width:650px){#wmsPlanningReference{padding:16px;margin-top:18px}}
 `;document.head.append(style);syncPlanning();
 })();
+
 
 
 
