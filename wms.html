@@ -48,7 +48,7 @@ html .panel,html .stat,html .module>.panel{background:var(--wg-surface)!importan
 html body.employee-home #home>.intro{background:linear-gradient(120deg,var(--wg-raised),var(--wg-surface))!important;border-color:var(--wg-line)!important;box-shadow:var(--wg-shadow)!important}
 html .chip{background:var(--wg-raised)!important;color:var(--wg-gold)!important;border:1px solid var(--wg-line)!important}
 html .notice{background:var(--wg-raised)!important;border-color:var(--wg-line)!important;border-left:3px solid var(--wg-gold)!important;color:var(--wg-muted)!important}
-html .quick button,html body.employee-home .quick button{background:linear-gradient(145deg,var(--wg-raised),var(--wg-surface))!important;border:1px solid var(--wg-line)!important;color:var(--wg-ink)!important;box-shadow:inset 0 1px 0 #ffffff08,var(--wg-shadow)!important;transition:background .15s,border-color .15s;min-height:102px}
+html .quick button,html body.employee-home .quick button{justify-content:center;align-items:center;text-align:center;gap:12px;background:linear-gradient(145deg,var(--wg-raised),var(--wg-surface))!important;border:1px solid var(--wg-line)!important;color:var(--wg-ink)!important;box-shadow:inset 0 1px 0 #ffffff08,var(--wg-shadow)!important;transition:background .15s,border-color .15s;min-height:102px}
 html .quick button:hover,html body.employee-home .quick button:hover{background:var(--wg-raised)!important;border-color:var(--wg-gold)!important}
 html .quick button>.wms-icon,html body.employee-home .quick button>.wms-icon,html .stat-icon{background:var(--wg-raised)!important;color:var(--wg-gold)!important;padding:11px;box-sizing:content-box;border-radius:12px;border:1px solid var(--wg-line)}
 html .wms-icon{color:var(--wg-gold)!important}
@@ -514,6 +514,7 @@ if(initial==='收貨與驗貨'||initial==='收貨與上架')go('收貨與驗貨'
  const route=decodeURIComponent(location.hash.slice(1));if(route==='物品分類管理')go(route);
 })();
 </script></body></html>
+
 
 
 
