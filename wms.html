@@ -97,6 +97,7 @@ body.receipt-view #module>.intro{display:none}
 /* Chapter 7 navigation and status presentation. */
 #wmsModuleStatus{max-width:1400px;margin:0 0 20px;padding:0;line-height:1.8;color:var(--wg-muted,#b8b4ac);font-size:14px}
 #wmsModuleStatus[hidden]{display:none!important}
+.nav .nav-common-title{padding:10px 12px 5px;color:var(--wg-muted,#b8b4ac);font-size:13px;font-weight:700;letter-spacing:1px}
 .nav .nav-group{margin:2px 0;border-top:1px solid var(--wg-line,#51432d);padding-top:6px}
 .nav .nav-group>summary{cursor:pointer;padding:10px 10px;font-size:15px;font-weight:700;color:var(--wg-ink,#f1eee8);line-height:1.5}
 .nav .nav-group>button{padding-left:18px;font-size:14px}
@@ -327,7 +328,8 @@ document.querySelector('.top>span').textContent=currentOperator.name+' · '+Work
  const nav=$('nav'),buttons=Array.from(nav.querySelectorAll('button'));
  const find=name=>buttons.find(x=>x.dataset.go===name);
  nav.replaceChildren();
- for(const name of ['倉儲工作台','我的任務','我的單據']){const button=find(name);if(button)nav.append(button);}
+ const commonTitle=document.createElement('div');commonTitle.className='nav-common-title';commonTitle.textContent='常用作業';nav.append(commonTitle);
+ for(const name of ['倉儲工作台','我的任務','建立單據','我的單據']){const button=find(name);if(button)nav.append(button);}
  function section(title,names){
   const entries=names.map(find).filter(Boolean);if(!entries.length)return;
   const group=document.createElement('details');group.className='nav-group';
@@ -347,7 +349,7 @@ document.querySelector('.top>span').textContent=currentOperator.name+' · '+Work
  single('報廢管理');section('維修管理',['維修管理','借出管理']);
  single('庫存查詢');single('盤點作業');
  section('廠商管理',['廠商管理','設備技術資料']);
- section('作業輔助',['建立單據','紀錄與通知','緊急補登']);
+ section('作業輔助',['紀錄與通知','緊急補登']);
  // Legacy aggregate routes remain addressable; their planning is now represented in the specific modules.
 }
 
@@ -512,6 +514,7 @@ if(initial==='收貨與驗貨'||initial==='收貨與上架')go('收貨與驗貨'
  const route=decodeURIComponent(location.hash.slice(1));if(route==='物品分類管理')go(route);
 })();
 </script></body></html>
+
 
 
 
