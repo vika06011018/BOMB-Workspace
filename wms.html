@@ -48,9 +48,9 @@ html .panel,html .stat,html .module>.panel{background:var(--wg-surface)!importan
 html body.employee-home #home>.intro{background:linear-gradient(120deg,var(--wg-raised),var(--wg-surface))!important;border-color:var(--wg-line)!important;box-shadow:var(--wg-shadow)!important}
 html .chip{background:var(--wg-raised)!important;color:var(--wg-gold)!important;border:1px solid var(--wg-line)!important}
 html .notice{background:var(--wg-raised)!important;border-color:var(--wg-line)!important;border-left:3px solid var(--wg-gold)!important;color:var(--wg-muted)!important}
-html .quick button,html body.employee-home .quick button{justify-content:center;align-items:center;text-align:center;gap:12px;background:linear-gradient(145deg,var(--wg-raised),var(--wg-surface))!important;border:1px solid var(--wg-line)!important;color:var(--wg-ink)!important;box-shadow:inset 0 1px 0 #ffffff08,var(--wg-shadow)!important;transition:background .15s,border-color .15s;min-height:102px}
+html .quick button,html body.employee-home .quick button{justify-content:center;align-items:center;text-align:center;gap:12px;padding:16px 20px;font-size:17px;font-weight:600;border-radius:9px;background:var(--wg-surface)!important;border:1px solid var(--wg-line)!important;color:var(--wg-ink)!important;box-shadow:none!important;transition:background .15s,border-color .15s;min-height:64px}
 html .quick button:hover,html body.employee-home .quick button:hover{background:var(--wg-raised)!important;border-color:var(--wg-gold)!important}
-html .quick button>.wms-icon,html body.employee-home .quick button>.wms-icon,html .stat-icon{background:var(--wg-raised)!important;color:var(--wg-gold)!important;padding:11px;box-sizing:content-box;border-radius:12px;border:1px solid var(--wg-line)}
+html .stat-icon{background:var(--wg-raised)!important;color:var(--wg-gold)!important;padding:11px;box-sizing:content-box;border-radius:12px;border:1px solid var(--wg-line)}
 html .wms-icon{color:var(--wg-gold)!important}
 html .task,html .item,html .panel h2,html .section,html .list{border-color:var(--wg-rule)!important}
 html .btn,html body.employee-home .task .btn,html .theme-switch{background:var(--wg-surface)!important;color:var(--wg-gold)!important;border:1px solid var(--wg-line)!important;box-shadow:inset 0 1px 0 #ffffff05}
@@ -59,6 +59,11 @@ html select,html input,html textarea{background:var(--wg-surface)!important;colo
 html .list>div{background:var(--wg-raised)!important;color:var(--wg-ink)!important;border-color:var(--wg-line)!important}
 html button:focus-visible,html a:focus-visible,html select:focus-visible{outline:2px solid var(--wg-gold)!important;outline-offset:3px}
 html .nav,html .sidebar,html .content{scrollbar-color:var(--wg-line) var(--wg-surface);scrollbar-width:thin}
+html #home>.quick{max-width:1120px;gap:14px;grid-template-columns:repeat(4,minmax(0,1fr))}
+html .quick button>.wms-icon,html body.employee-home .quick button>.wms-icon{width:28px;height:28px;padding:0;background:none!important;border:0;border-radius:0;box-sizing:border-box;flex-shrink:0}
+@media(max-width:1200px){html #home>.quick{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){html .quick button,html body.employee-home .quick button{padding:14px 10px;font-size:15px;gap:9px}html .quick button>.wms-icon,html body.employee-home .quick button>.wms-icon{width:25px;height:25px}}
+@media(max-width:380px){html #home>.quick{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){html .quick button{transition:none}}
 }
 
@@ -514,6 +519,7 @@ if(initial==='收貨與驗貨'||initial==='收貨與上架')go('收貨與驗貨'
  const route=decodeURIComponent(location.hash.slice(1));if(route==='物品分類管理')go(route);
 })();
 </script></body></html>
+
 
 
 
