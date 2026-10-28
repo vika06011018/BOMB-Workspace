@@ -97,8 +97,8 @@ body.receipt-view #module>.intro{display:none}
 /* Chapter 7 navigation and status presentation. */
 #wmsModuleStatus{max-width:1400px;margin:0 0 20px;padding:0;line-height:1.8;color:var(--wg-muted,#b8b4ac);font-size:14px}
 #wmsModuleStatus[hidden]{display:none!important}
-.nav .nav-group{margin:8px 0;border-top:1px solid var(--wg-line,#51432d);padding-top:6px}
-.nav .nav-group>summary{cursor:pointer;padding:12px 10px;font-size:15px;font-weight:700;color:var(--wg-ink,#f1eee8);line-height:1.5}
+.nav .nav-group{margin:2px 0;border-top:1px solid var(--wg-line,#51432d);padding-top:6px}
+.nav .nav-group>summary{cursor:pointer;padding:10px 10px;font-size:15px;font-weight:700;color:var(--wg-ink,#f1eee8);line-height:1.5}
 .nav .nav-group>button{padding-left:18px;font-size:14px}
 .nav .nav-group>summary:focus-visible{outline:2px solid var(--wg-gold,#edba60);outline-offset:2px}
 @media(max-width:600px){.nav .nav-group{flex:0 0 auto;min-width:170px;margin:0;padding-top:0;border-top:0}.nav .nav-group>button{width:100%;white-space:normal;min-width:0}.nav .nav-group>summary{min-height:46px}}
@@ -110,165 +110,184 @@ const moduleIcons={"倉儲工作台": "dashboard", "我的任務": "clipboard", 
 const modules={
  "倉儲工作台": [],
  "建立單據": [
-  "第7章共通單據：進貨、領用、入庫、移轉、報廢、維修及借出",
+  "共通單據：進貨、領用、入庫、移轉、報廢、維修及借出",
   "依授權顯示入口；各單據共用狀態與目前步驟的整合尚未完成",
   "領用為獨立示範資料；移轉已有本機申請與審核，尚未接掃描執行",
-  "通用進貨只提供規劃入口；撲克牌收貨與抽驗原型保留為獨立入口"
+  "通用進貨尚待實作；既有特殊收貨原型由進貨管理中的收貨與驗貨進入"
  ],
  "我的單據": [
-  "第7章共通查詢：依類型、狀態、物品、建立人員與時間查詢",
+  "共通查詢：依類型、狀態、物品、建立人員與時間查詢",
   "查看目前步驟、操作人員、逾期與異動履歷",
   "目前僅列出自己的本機領用示範紀錄，尚未整合所有單據"
  ],
  "我的任務": [
-  "第7章共通任務：待執行／執行中，逾期者優先",
+  "共通任務：待執行／執行中，逾期者優先",
   "首次掃描後記錄執行人，其他人員僅能查看；不預先指定執行人",
   "主管依時效規則強制結案或改派，填寫原因並留存紀錄",
   "目前任務與數量仍為示範，未串接正式任務"
  ],
  "庫存查詢": [
-  "第7.12章：依位置、分類及物品狀態查看同一份庫存",
+  "依位置、分類及物品狀態查看同一份庫存",
   "分別顯示可用、待驗、待退、領用、維修、借出、保養、運送與報廢留存數量",
-  "第7.12章庫存沖正須有授權、前後數值與原因，保留原始紀錄",
+  "庫存沖正須有授權、前後數值與原因，保留原始紀錄",
   "目前可查詢與補齊Excel匯入資料，尚非完整狀態庫存帳本"
  ],
  "收貨與驗貨": [
-  "第7.6章的撲克牌特殊流程試作，不代表通用進貨管理已完成",
+  "撲克牌特殊流程試作，不代表通用進貨管理已完成",
   "保留到貨、每箱QR與6碼、先貼標上架，再逐箱抽驗8副的流程",
   "一般物品需先待驗、驗貨合格再上架；不得套用撲克牌例外",
   "本機收貨資料尚未接通採購、供應商主檔、匯入庫存及正式領用"
  ],
  "申請與提領": [
-  "第7.7章：依分類與品項建立領用，支援個別或批量、地點或人員",
+  "依分類與品項建立領用，支援個別或批量、地點或人員",
   "可依最初入庫時間建議先進先出，或指定物品／批次",
   "領用免事前審核，完成後由SM事後查核；撤下項目與綁定數量限制尚待實作",
   "依已確認規則：倉庫到N櫃或其他倉外位置使用領用單",
   "目前只提供固定商品及目的地的獨立示範流程，未扣減Excel匯入庫存"
  ],
  "歸還與移轉": [
-  "第7.9章：歸還先送待驗區，驗收通過並上架後才增加可用庫存",
+  "歸還先送待驗區，驗收通過並上架後才增加可用庫存",
   "移轉依已確認規則：倉內貨架間，或倉外位置／持有人之間調度",
   "移轉須先申請、主管審核、現場掃描執行，再更新位置／持有人",
   "歸還目前只有版面；移轉已有本機申請與審核，受位置檢核限制且尚未改動庫存"
  ],
  "盤點作業": [
-  "第7.13章：依現場需求發起，範圍與狀態深度可組合",
+  "依現場需求發起，範圍與狀態深度可組合",
   "實盤填報、不同人複查、異常調查與三選一結案",
-  "調查中的範圍暫時排除，原始紀錄保留；依13.6倉儲日誌追查",
-  "無標籤備品依7.2.1每日三班盤點另行管理；本功能尚未實作"
+  "調查中的範圍暫時排除，原始紀錄保留；依倉儲異動日誌追查",
+  "無標籤備品依備品管理規則每日三班盤點另行管理；本功能尚未實作"
  ],
  "備品管理": [
-  "第7.2.1章：無標籤消耗品使用獨立備品管理",
+  "無標籤消耗品使用獨立備品管理",
   "PB或指定人員每日三班盤點；到貨以數量及日期登記",
   "消耗量＝前次盤點＋期間進貨－本次盤點，依近N天平均量估算採購建議",
   "不走一般領用、入庫、NFC／QR或身上貨品追蹤",
-  "盤點、進貨登記、消耗與採購建議及13.6日誌均尚未實作"
+  "盤點、進貨登記、消耗與採購建議及倉儲異動日誌均尚未實作"
  ],
  "資產與配置": [
-  "第7.4、7.2.2、7.2.3及7.14.1章的既有彙總規劃入口保留",
-  "制服管理、無線電耳機管理與設備技術資料已列為獨立規劃入口",
+  "既有彙總規劃入口保留",
+  "制服與耳機由物品分類管理進入，設備管理由廠商管理進入",
   "各入口須引用共用品項、分類與庫存，不另建立互不相通的數量",
   "目前沒有實際配發、持有或設備主檔功能"
  ],
  "維修與報廢": [
-  "第7.10章：報廢申請、主管簽核、報廢留存、期限與丟棄確認，歷史保留",
-  "第7.11章：送修申請、主管審核、送修、取回驗收與上架",
+  "報廢申請、主管簽核、報廢留存、期限與丟棄確認，歷史保留",
+  "送修申請、主管審核、送修、取回驗收與上架",
   "維修與借出不計入可用庫存；非故障外借另由借出管理處理",
   "需保養分類須連動實際保養任務；目前維修、報廢與保養均尚未實作"
  ],
  "緊急補登": [
-  "第7.5.1章識別備援與相關作業紀錄的既有入口保留",
+  "識別備援與相關作業紀錄的既有入口保留",
   "一般倉儲以QR為主、手動6碼備援；NFC三層只用於適用物品／流程",
   "備援應回到原單據或物品流程，記錄載體與原因，不另造一份庫存",
-  "完整補登與13.7識別日誌尚未實作"
+  "完整補登與識別操作日誌尚未實作"
  ],
  "位置與分類": [
-  "第7.1章：國家、區域、廳別、組別／貨架、桌別／櫃位與貨架設定",
-  "第7.2章：主分類、子分類、識別方式、配發對象、採購與保養規則",
+  "國家、區域、廳別、組別／貨架、桌別／櫃位與貨架設定",
+  "主分類、子分類、識別方式、配發對象、採購與保養規則",
   "既有A倉至F倉與底下位置保留，正式層級關係未確認前不自動搬入",
   "目前提供上層預覽、倉別／位置與貨架本機設定、分類本機管理",
   "貨架本機QR＋6碼可產生、查找、預覽及列印；正式跨裝置資料與品項分類連動尚未接通"
  ],
  "標籤與匯入": [
-  "第7.5與7.6.1章：識別映射、物品建檔及標籤產製；7.1貨架標籤由位置管理操作",
+  "管理識別資料、標籤列印、補印與換發；貨架標籤由位置管理操作",
   "保留既有Excel直接上傳、整理、預覽確認，不要求逐筆改套固定範本",
   "原位置與單位缺漏保留待確認，匯入來源與既有資料保留",
   "物品標籤、補印／換發與正式API尚未完整實作；後端匯入驗證前保留本機寫入"
  ],
  "紀錄與通知": [
-  "第7章作業履歷與第13.6倉儲異動、第13.7識別操作日誌對照",
+  "作業履歷、倉儲異動與識別操作紀錄",
   "保留單據步驟、人員時間、前後位置／數量、識別碼延續與調整原因",
-  "逾期、庫存、人員離職未歸還與適用的識別降級告警，依第8.4.3章連動",
+  "逾期、庫存、人員離職未歸還與適用的識別降級告警，依連動",
   "目前只有部分本機作業各自保存紀錄，統一日誌與告警尚未接通"
  ],
  "物品管理": [
-  "第7.4章：物品名稱／編號、主分類／子分類、狀態、位置與時間查詢",
+  "物品名稱／編號、主分類／子分類、狀態、位置與時間查詢",
   "顯示個別或批量數量、目前狀態、位置、持有人及完整生命週期履歷",
-  "不在本頁新增物品或產製標籤；物品建檔及標籤產製依7.6.1處理",
+  "不在本頁新增物品或產製標籤；物品建檔及標籤產製於進貨管理處理",
   "本頁尚未實作；現有匯入清單請由庫存查詢查看"
  ],
  "進貨管理": [
-  "第7.6章：日常用品採購申請與行政審核、設備訂購記錄",
+  "日常用品採購申請與行政審核、設備訂購記錄",
   "到貨待驗、分批收貨與差異、驗貨、入庫／驗退及數量更正",
-  "第7.6.1章：依個別或批量規則建立品項及產製識別標籤",
-  "無標籤備品依7.2.1專用進貨登記；撲克牌使用保留的特殊收貨／抽驗流程",
+  "依個別或批量規則建立品項及產製識別標籤",
+  "無標籤備品依備品管理規則專用進貨登記；撲克牌使用保留的特殊收貨／抽驗流程",
   "本頁尚未實作通用進貨；撲克牌原型不代表一般進貨已完成"
  ],
  "退貨管理": [
-  "第7.8章：供應商召回與新進物品驗退，依單據適用規則處理審核",
+  "供應商召回與新進物品驗退，依單據適用規則處理審核",
   "執行退貨出庫、待退與已退狀態及庫存／履歷連動",
   "舊物品歸還驗收不合格不自動套用新進驗退流程",
   "本功能尚未實作"
  ],
  "借出管理": [
-  "第7.11章：非故障的外借測試／評估，由後台搜尋物品建單",
+  "非故障的外借測試／評估，由後台搜尋物品建單",
   "主管審核後到平板掃描執行，借出中不計入可用庫存",
   "歸還驗收通過後上架；驗收不通過轉適用的維修或報廢流程",
   "本功能尚未實作，與故障送修分開管理"
  ],
  "制服管理": [
-  "第7.2.2章：制服子分類依公司實際需求自行建立，不預設職位／性別／服裝組合",
+  "制服子分類依公司實際需求自行建立，不預設職位／性別／服裝組合",
   "公版款使用共用尺碼池、每人2套基準；不綁定個別實體件、不追蹤個人持有",
   "訂製款以分類持有人員清單記錄，不綁定特定實體件",
-  "提供依分類／人員總覽，串接9.8人資異動提醒與8.4.3告警",
+  "提供依分類／人員總覽，串接人資異動提醒與告警",
   "本功能尚未實作；目前分類中的制服與角色欄位僅保存設定"
  ],
  "無線電耳機管理": [
-  "第7.2.3章：分類設定為個別識別標籤、QR兩層、配發對象為人員",
+  "分類設定為個別識別標籤、QR兩層、配發對象為人員",
   "PB／SM於平板建領用申請，領取掃描後記錄每支耳機對應人員",
   "歸還掃描確認後解除綁定；離職／轉調提示與未歸還告警",
   "使用共用品項、分類、領用與歸還資料；本功能尚未實作"
  ],
  "特殊物品分類": [
-  "第7.3章：撲克牌、牌盒、牌靴、球盒、備用牌、折損牌、練習牌及報廢牌",
+  "撲克牌、牌盒、牌靴、球盒、備用牌、折損牌、練習牌及報廢牌",
   "相關業務啟用後使用系統固定分類，不可任意修改或刪除",
-  "保留第6章洗牌房與機械手臂相關識別、位置及生命週期規則",
+  "保留洗牌房與機械手臂相關識別、位置及生命週期規則",
   "其他公司依業務需要啟用；目前尚未實作公司模組設定與完整固定分類"
  ],
  "廠商管理": [
-  "第7.14章：廠商編號、類型、名稱、聯絡人、電話、信箱、備註及啟停用",
+  "廠商編號、類型、名稱、聯絡人、電話、信箱、備註及啟停用",
   "類型可依公司需求擴充，供進貨、退貨、維修及相關設備引用",
   "停用與引用歷史需保留，不用手填供應商取代正式主檔關係",
   "本功能尚未實作"
  ],
  "設備技術資料": [
-  "第7.14.1章：設備編號、類型、名稱、廠商、型號、序號、保固與技術歷程",
-  "設備編號與7.2物品分類下品項互相對應，數量／位置／生命週期用同一套物品資料",
-  "採購設備序號與保固依7.6驗貨帶入；手動新增用於舊設備或非採購來源",
+  "設備編號、類型、名稱、廠商、型號、序號、保固與技術歷程",
+  "設備編號與物品分類下品項互相對應，數量／位置／生命週期用同一套物品資料",
+  "採購設備序號與保固依進貨驗貨帶入；手動新增用於舊設備或非採購來源",
   "本功能尚未實作，不另設一套設備庫存"
  ]
 };
+modules['識別標籤管理']=['管理物品與位置識別資料，一般倉儲使用QR與6碼備援。','依適用物品支援NFC、QR與人工備援，保留識別操作紀錄。','提供標籤列印、補印與換發；補印沿用原內容，換發保留物品編號與履歷。','目前僅貨架本機測試標籤可操作，物品標籤與正式跨裝置識別尚未完成。'];
+modules['物品分類管理']=[
+ '建立主分類與子分類，設定標籤、配發對象、批量單位、採購與保養規則。',
+ '備品使用每日盤點與進貨登記；制服、耳機共用物品、領用及入庫資料。',
+ '分類名稱及適用規則依企業需求設定；既有本機分類可由分類設定開啟。',
+ '分類與現有庫存、人資及正式作業尚未完整連動。'
+];
+modules['報廢管理']=[
+ '授權人員提出報廢，記錄物品、數量、報廢區、原因及附件。',
+ '主管簽核後轉報廢留存，到期執行丟棄確認；物品履歷永久保留。',
+ '支援個別、批量及未建立識別碼的驗退物品，依適用規則處理。',
+ '本功能尚未實作。'
+];
+modules['維修管理']=[
+ '建立送修申請，選擇維修區、送修廠商並記錄故障。',
+ '主管審核後執行送修；取回驗收通過並上架後恢復可用庫存。',
+ '非故障外借另由借出管理處理；維修與借出共用物品及履歷。',
+ '本功能尚未實作。'
+];
 const descriptions={'我的任務':'先看要做什麼，再進入對應作業。','庫存查詢':'知道物品在哪裡、剩多少，以及目前能不能領。','申請與提領':'來源箱與目的儲位分開記錄，櫃位名稱由企業自訂。','備品管理':'無標籤備品與需掃碼扣量的批量物品分開管理。','緊急補登':'緊急先使用，事後依識別碼補登。'};
-const grants={'我的任務':'tasks','庫存查詢':'stock','收貨與驗貨':'receive','申請與提領':'request','歸還與移轉':'returns','盤點作業':'count','備品管理':'count','資產與配置':'stock','維修與報廢':'approve','緊急補登':'emergency','位置與分類':'master','標籤與匯入':'master','紀錄與通知':'tasks','物品管理':'stock','進貨管理':'receive','退貨管理':'approve','借出管理':'approve','制服管理':'stock','無線電耳機管理':'stock','特殊物品分類':'master','廠商管理':'master','設備技術資料':'stock'};
+const grants={'我的任務':'tasks','庫存查詢':'stock','收貨與驗貨':'receive','申請與提領':'request','歸還與移轉':'returns','盤點作業':'count','備品管理':'count','資產與配置':'stock','維修與報廢':'approve','緊急補登':'emergency','位置與分類':'master','標籤與匯入':'master','紀錄與通知':'tasks','物品管理':'stock','進貨管理':'receive','退貨管理':'approve','借出管理':'approve','制服管理':'stock','無線電耳機管理':'stock','特殊物品分類':'master','廠商管理':'master','設備技術資料':'stock','識別標籤管理':'master','物品分類管理':'master','報廢管理':'approve','維修管理':'approve'};
 function allowed(name){const p=Workspace.current();if(p&&p.systems.includes('WMS')&&name==='我的單據')return true;if(p&&p.systems.includes('WMS')&&name==='建立單據')return ['request','returns','receive','approve','dispatch'].some(g=>p.permissions.includes(g));return !!p&&p.systems.includes('WMS')&&(name==='倉儲工作台'||(name==='申請與提領'&&(p.permissions.includes('request')||p.permissions.includes('pickup')))||p.permissions.includes(grants[name]));}
 const role=Workspace.role(currentOperator);
 const homeTitle=({employee:'我的工作',sm:'現場管理工作台',executive:'倉儲管理總覽',admin:'行政倉儲工作台'})[role]||'倉儲工作台';
 const employeeHome=role==='employee';
 const $=id=>document.getElementById(id);
-function displayName(name){return employeeHome?({'我的任務':'我的待辦','庫存查詢':'庫存與位置查詢'}[name]||name):name;}
+function displayName(name){return ({'位置與分類':'倉儲架構','標籤與匯入':'識別標籤管理與匯入','申請與提領':'領用管理','歸還與移轉':'入庫管理','庫存查詢':'庫存總覽','盤點作業':'盤點','備品管理':'備品區管理','設備技術資料':'設備管理','我的單據':'單據查詢'}[name]||name);}
 moduleIcons['建立單據']='request';moduleIcons['我的單據']='clipboard';
-Object.assign(moduleIcons,{'物品管理':'box','進貨管理':'receive','退貨管理':'returns','借出管理':'returns','制服管理':'asset','無線電耳機管理':'asset','特殊物品分類':'box','廠商管理':'asset','設備技術資料':'asset'});
-const navLabels={'收貨與驗貨':'撲克牌收貨與抽驗','申請與提領':'領用申請與提領'};
+Object.assign(moduleIcons,{'物品管理':'box','進貨管理':'receive','退貨管理':'returns','借出管理':'returns','制服管理':'asset','無線電耳機管理':'asset','特殊物品分類':'box','廠商管理':'asset','設備技術資料':'asset','識別標籤管理':'qr','物品分類管理':'box','報廢管理':'warning','維修管理':'wrench'});
+const navLabels={'位置與分類':'倉別與位置設定','標籤與匯入':'Excel匯入','申請與提領':'領用管理','歸還與移轉':'入庫與位置移轉','庫存查詢':'庫存總覽','盤點作業':'盤點','備品管理':'備品區管理','設備技術資料':'設備管理','我的單據':'單據查詢'};
 const moduleStatus={
 '建立單據':'部分入口可操作；領用仍為獨立示範，移轉尚未接執行。',
 '我的單據':'目前僅顯示本機領用示範紀錄，尚未整合其他單據。',
@@ -303,16 +322,33 @@ if(employeeHome){
 }
 document.querySelector('.top>span').textContent=currentOperator.name+' · '+Workspace.roles[Workspace.role(currentOperator)]+'｜本機原型';document.querySelector('#home h1').textContent=({'employee':'我的工作','sm':'現場管理工作台','executive':'倉儲管理總覽','admin':'行政倉儲工作台'})[Workspace.role(currentOperator)];Object.keys(modules).forEach(name=>{if(!allowed(name))return;let b=document.createElement('button');b.innerHTML=icon(moduleIcons[name]);const label=document.createElement('span');label.textContent=name==='倉儲工作台'?homeTitle:(navLabels[name]||displayName(name));b.append(label);b.dataset.go=name;$('nav').appendChild(b)});
 
-// Navigation groups change presentation only; data-go route names and existing permissions remain intact.
+// Ordered task navigation. Existing route keys and permission checks are retained.
 {
- const nav=$('nav'),buttons=Array.from(nav.querySelectorAll('button')),primary=['倉儲工作台','我的任務','建立單據','我的單據'];
- if(employeeHome)primary.splice(3,0,'庫存查詢');
- const groups=[['基本資料',['位置與分類','物品管理','特殊物品分類','廠商管理','設備技術資料','標籤與匯入']],['日常倉儲',['進貨管理','收貨與驗貨','申請與提領','歸還與移轉','退貨管理','維修與報廢','借出管理','盤點作業','庫存查詢']],['備品與人員配發',['備品管理','制服管理','無線電耳機管理','資產與配置']],['紀錄與輔助',['紀錄與通知','緊急補登']]];
- const used=new Set();nav.replaceChildren();
- for(const name of primary){const button=buttons.find(x=>x.dataset.go===name);if(button){nav.append(button);used.add(name);}}
- for(const [title,names] of groups){const group=document.createElement('details');group.className='nav-group';const summary=document.createElement('summary');summary.textContent=title;group.append(summary);for(const name of names){if(used.has(name))continue;const button=buttons.find(x=>x.dataset.go===name);if(button){group.append(button);used.add(name);}}if(group.querySelector('button'))nav.append(group);}
- // Preserve any future authorized routes that have not yet been assigned a group.
- for(const button of buttons)if(!used.has(button.dataset.go))nav.append(button);
+ const nav=$('nav'),buttons=Array.from(nav.querySelectorAll('button'));
+ const find=name=>buttons.find(x=>x.dataset.go===name);
+ nav.replaceChildren();
+ for(const name of ['倉儲工作台','我的任務','我的單據']){const button=find(name);if(button)nav.append(button);}
+ function section(title,names){
+  const entries=names.map(find).filter(Boolean);if(!entries.length)return;
+  const group=document.createElement('details');group.className='nav-group';
+  const summary=document.createElement('summary');summary.textContent=title;group.append(summary);
+  for(const button of entries)group.append(button);nav.append(group);
+ }
+ function single(name){const button=find(name);if(button)nav.append(button);}
+ section('倉儲架構',['位置與分類']);
+ section('物品分類管理',['物品分類管理','備品管理','制服管理','無線電耳機管理']);
+ const categoryButton=find('物品分類管理');if(categoryButton)categoryButton.querySelector('span').textContent='分類設定';
+ single('特殊物品分類');single('物品管理');
+ section('識別標籤管理',['識別標籤管理','標籤與匯入']);
+ section('進貨管理',['進貨管理','收貨與驗貨']);
+ const purchaseButton=find('進貨管理');if(purchaseButton)purchaseButton.querySelector('span').textContent='進貨單據';
+ single('申請與提領');single('退貨管理');
+ section('入庫管理',['歸還與移轉']);
+ single('報廢管理');section('維修管理',['維修管理','借出管理']);
+ single('庫存查詢');single('盤點作業');
+ section('廠商管理',['廠商管理','設備技術資料']);
+ section('作業輔助',['建立單據','紀錄與通知','緊急補登']);
+ // Legacy aggregate routes remain addressable; their planning is now represented in the specific modules.
 }
 
 function go(name){if(!Workspace.current()){location.replace('./index.html');return}if(!allowed(name))name='倉儲工作台';if(!Object.hasOwn(modules,name))name='倉儲工作台';document.querySelectorAll('#nav button').forEach(b=>{b.classList.toggle('active',b.dataset.go===name);b.setAttribute('aria-current',b.dataset.go===name?'page':'false')});const selected=document.querySelector('#nav button.active');if(selected&&selected.closest('details'))selected.closest('details').open=true;$('crumb').textContent=name==='倉儲工作台'?homeTitle:displayName(name);let home=name==='倉儲工作台';$('home').style.display=home?(employeeHome?'flex':'block'):'none';$('module').style.display=home?'none':'block';$('title').textContent=displayName(name);$('desc').textContent=descriptions[name]||'依企業權限與管理範圍，處理相關倉儲工作。';$('items').replaceChildren(...modules[name].map(s=>{let e=document.createElement('div');e.textContent=s;return e}));moduleStatusNode.hidden=home;moduleStatusNode.textContent=home?'':'目前狀態：'+(moduleStatus[name]||'尚未實作，目前僅提供下方功能規劃。');history.replaceState(null,'','#'+encodeURIComponent(name));window.scrollTo(0,0)}
@@ -454,12 +490,29 @@ const next=r.boxUnits.find(x=>workMode==='shelf'?!x.shelf:!x.sample);if(next&&ne
 const shelf=area.querySelector('#boxShelf'),sample=area.querySelector('#boxSample');if(shelf)save(shelf,'shelf');if(sample)save(sample,'sample');if(matchMedia('(max-width:700px)').matches)area.scrollIntoView({behavior:'smooth',block:'start'});
 }catch(e){showError(e)}}
 const menu=document.createElement('button');menu.type='button';menu.className='btn receipt-menu-toggle';menu.textContent='☰ 選單';menu.setAttribute('aria-expanded','false');menu.onclick=()=>{const open=document.body.classList.toggle('nav-open');menu.setAttribute('aria-expanded',String(open));};document.querySelector('.top').prepend(menu);const closeMenu=document.createElement('button');closeMenu.type='button';closeMenu.className='btn receipt-menu-close';closeMenu.textContent='關閉選單';closeMenu.onclick=()=>{document.body.classList.remove('nav-open');menu.setAttribute('aria-expanded','false');};document.querySelector('.sidebar').prepend(closeMenu);matchMedia('(min-width:1401px)').addEventListener('change',e=>{const master=host.querySelector('.receipt-master');if(master)master.open=e.matches;});document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.body.classList.remove('nav-open');menu.setAttribute('aria-expanded','false');}});
-function showReceiveWorkspace(){document.body.classList.add('receipt-view');document.getElementById('crumb').textContent='收貨與上架';document.querySelector('#module>.panel').hidden=true;document.getElementById('pickupApp').hidden=true;host.hidden=false;document.getElementById('title').textContent='收貨與上架';document.getElementById('desc').textContent='選擇收貨單與箱子，進行單箱／批量上架及逐箱抽驗。';arrival();};
-const previousGo=go;go=function(name){batchSession=null;batchSelected.clear();document.body.classList.remove('receipt-view','nav-open');menu.setAttribute('aria-expanded','false');host.hidden=true;previousGo(name);if(name==='收貨與驗貨'&&allowed(name)){showReceiveWorkspace();document.getElementById('desc').textContent='目前提供撲克牌收貨、上架與抽驗原型；一般物品驗貨流程待補齊。';}};
+function showReceiveWorkspace(){document.body.classList.add('receipt-view');document.getElementById('crumb').textContent='收貨與驗貨';document.querySelector('#module>.panel').hidden=true;document.getElementById('pickupApp').hidden=true;host.hidden=false;document.getElementById('title').textContent='收貨與驗貨';document.getElementById('desc').textContent='選擇收貨單與箱子，進行單箱／批量上架及逐箱抽驗。';arrival();};
+const previousGo=go;go=function(name){batchSession=null;batchSelected.clear();document.body.classList.remove('receipt-view','nav-open');menu.setAttribute('aria-expanded','false');host.hidden=true;previousGo(name);if(name==='收貨與驗貨'&&allowed(name)){showReceiveWorkspace();document.getElementById('desc').textContent='所有適用物品共用收貨與驗貨；目前可操作區為撲克牌特殊流程的本機原型，一般物品流程尚未實作。';}};
 window.openCardsReceive=()=>go('收貨與驗貨');
 if(initial==='收貨與驗貨'||initial==='收貨與上架')go('收貨與驗貨');
 })();
-</script><script src="./assets/workspace-camera.js"></script><script src="./assets/workspace-import.js"></script></body></html>
+</script><script src="./assets/workspace-camera.js"></script><script src="./assets/workspace-import.js"></script><script>
+(function(){
+ const previous=go;
+ go=function(name){
+  if(name==='物品分類管理'&&allowed(name)){
+   previous('位置與分類');document.getElementById('scCategoryTab')?.click();
+   document.getElementById('items').replaceChildren(...modules['物品分類管理'].map(text=>{const row=document.createElement('div');row.textContent=text;return row;}));
+   document.getElementById('title').textContent='物品分類管理';
+   document.getElementById('crumb').textContent='物品分類管理';
+   document.getElementById('wmsModuleStatus').textContent='目前狀態：分類可儲存在本機，尚未與現有庫存及正式作業連動。';
+   document.querySelectorAll('#nav button').forEach(b=>{const active=b.dataset.go===name;b.classList.toggle('active',active);b.setAttribute('aria-current',active?'page':'false');if(active&&b.closest('details'))b.closest('details').open=true;});
+   history.replaceState(null,'','#'+encodeURIComponent(name));
+  }else{previous(name);if(allowed(name)&&['位置與分類','標籤與匯入','庫存查詢','歸還與移轉'].includes(name)){document.getElementById('title').textContent=displayName(name);document.getElementById('crumb').textContent=displayName(name);}if(name==='位置與分類'&&allowed(name))document.getElementById('scLocationTab')?.click();}
+ };
+ const route=decodeURIComponent(location.hash.slice(1));if(route==='物品分類管理')go(route);
+})();
+</script></body></html>
+
 
 
 
