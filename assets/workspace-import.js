@@ -548,47 +548,53 @@ function rackSettings(data,warehouse,location){
 }
 function rackTypeOptions(data){return [...new Set([...RACK_TYPES,...setupDefinitions(data).map(d=>d.rackType).filter(x=>typeof x==='string'&&norm(x))])];}
 const rackDialog=el('dialog');rackDialog.id='siRackDialog';rackDialog.setAttribute('aria-labelledby','rkTitle');
-rackDialog.innerHTML='<h2 id="rkTitle">貨架設定</h2><p id="rkWarehouse"></p><div class="rk-fields"><label for="rkName">貨架／位置名稱</label><input id="rkName" readonly><span>貨架代碼</span><output id="rkCode"></output><label for="rkType">貨架類型</label><select id="rkType"></select><label for="rkCustom" id="rkCustomLabel" hidden>自訂類型名稱</label><input id="rkCustom" maxlength="100" hidden><span>貨架識別標籤</span><output id="rkLabel"></output><label for="rkReason">修改原因</label><textarea id="rkReason" maxlength="500" rows="2"></textarea></div><p>本頁設定貨架用途，不會變動物品數量或存放位置。修改名稱請由「查看品項」進入編輯。</p><p id="rkError" role="alert"></p><div class="rk-actions"><button class="btn" id="rkCancel">取消</button><button class="btn" id="rkSave">儲存設定</button></div>';
+rackDialog.innerHTML='<h2 id="rkTitle">貨架設定</h2><p id="rkWarehouse"></p><div class="rk-fields"><label for="rkName">貨架／位置名稱</label><input id="rkName" maxlength="200" autocomplete="off"><span>貨架代碼</span><output id="rkCode"></output><label for="rkType">貨架類型</label><select id="rkType"></select><label for="rkCustom" id="rkCustomLabel" hidden>自訂類型名稱</label><input id="rkCustom" maxlength="100" hidden><span>貨架識別標籤</span><output id="rkLabel"></output><label for="rkReason" id="rkReasonLabel">修改原因</label><textarea id="rkReason" maxlength="500" rows="2"></textarea></div><p>名稱與類型可在此一起設定。修改名稱會同步更新此位置下品項的位置名稱，數量不變。</p><p id="rkError" role="alert"></p><div class="rk-actions"><button class="btn" id="rkCancel">取消</button><button class="btn" id="rkSave">儲存設定</button></div>';
 document.body.append(rackDialog);
 const rk=id=>rackDialog.querySelector('#'+id);let rackTarget=null,rackBusy=false;
 function updateRackCustom(){const custom=rk('rkType').value==='custom';rk('rkCustom').hidden=rk('rkCustomLabel').hidden=!custom;}
-function openRackSettings(warehouse,location){try{
+function openRackSettings(warehouse,location=null){try{
  if(!settingsAuthorized())throw Error('目前帳號沒有位置設定權限。');
- const data=readInventory();if(!location||!setupGroups(data).get(warehouse)?.has(location))throw Error('位置已變更，請重新讀取。');
- const d=rackSettings(data,warehouse,location),options=rackTypeOptions(data);
- rackTarget={warehouse,location,scope:ownerScope(),raw:localStorage.getItem(inventoryKey())};
- rk('rkWarehouse').textContent='所屬倉別：'+warehouse;rk('rkName').value=location;
- rk('rkCode').textContent=d.rackCode||'待 API 建檔後自動產生';
- rk('rkLabel').textContent=d.rackAccessCode?'6 碼識別碼：'+d.rackAccessCode+'；QR 與列印功能尚未串接':'QR＋6 碼識別碼，待 API 建檔後提供';
- rk('rkType').replaceChildren(new Option('請選擇貨架類型',''),...options.map((name,index)=>new Option(name,String(index))),new Option('＋ 自訂類型','custom'));
+ const data=readInventory(),groups=setupGroups(data),creating=location===null;if(!groups.has(warehouse)||!creating&&(!location||!groups.get(warehouse).has(location)))throw Error('倉別或位置已變更，請重新讀取。');
+ const d=creating?{}:rackSettings(data,warehouse,location),options=rackTypeOptions(data);
+ rackTarget={warehouse,location,creating,scope:ownerScope(),raw:localStorage.getItem(inventoryKey())};
+ rk('rkTitle').textContent=creating?'新增貨架／位置':'編輯貨架／位置';rk('rkWarehouse').textContent='所屬倉別：'+warehouse;rk('rkName').value=location||'';rk('rkReason').hidden=rk('rkReasonLabel').hidden=creating;
+ rk('rkCode').textContent=d.rackCode||'由系統自動產生（尚未啟用）';
+ rk('rkLabel').textContent=d.rackAccessCode?'6 碼識別碼：'+d.rackAccessCode+'；QR 與列印功能尚未串接':'QR＋6 碼識別碼，尚未產製';
+ rk('rkType').replaceChildren(new Option(!creating&&!d.rackType?'待設定（保留原狀）':'請選擇貨架類型',''),...options.map((name,index)=>new Option(name,String(index))),new Option('＋ 自訂類型','custom'));
  rk('rkType').value=d.rackType?String(options.indexOf(d.rackType)):'';
- rk('rkType')._rackOptions=options;rk('rkCustom').value='';rk('rkReason').value='';rk('rkError').textContent='';updateRackCustom();rackDialog.showModal();rk('rkType').focus();
+ rk('rkType')._rackOptions=options;rk('rkCustom').value='';rk('rkReason').value='';rk('rkError').textContent='';updateRackCustom();rackDialog.showModal();rk('rkName').focus();
  }catch(error){ss('ssError').textContent=error.message;}}
-function applyRackType(data,warehouse,location,type,reason,user){
- if(!location||!setupGroups(data).get(warehouse)?.has(location))throw Error('位置已變更。');
- if(typeof type!=='string'||!norm(type)||type.length>100)throw Error('請選擇貨架類型，自訂名稱最多 100 字。');
- if(typeof reason!=='string'||!norm(reason)||reason.length>500)throw Error('請填寫修改原因，最多 500 字。');
- const before=rackSettings(data,warehouse,location).rackType||null;
- if(before===type)return false;
+function applyRackSettings(data,warehouse,location,name,type,reason,user){
+ const groups=setupGroups(data),creating=location===null;
+ if(!groups.has(warehouse)||!creating&&(!location||!groups.get(warehouse).has(location)))throw Error('倉別或位置已變更。');
+ if(typeof name!=='string'||!norm(name)||name.length>200)throw Error('請填寫貨架／位置名稱，最多 200 字。');
+ if([...groups.get(warehouse).keys()].some(v=>v!==location&&definitionName(v)===definitionName(name)))throw Error('此倉別已有相同名稱的位置。');
+ const before=creating?null:rackSettings(data,warehouse,location),oldType=before?.rackType||'';
+ if(typeof type!=='string'||type.length>100||(!norm(type)&&(creating||oldType)))throw Error('請選擇貨架類型，自訂名稱最多 100 字。');
+ if(!creating&&location===name&&oldType===type)return false;
+ if(!creating&&(typeof reason!=='string'||!norm(reason)||reason.length>500))throw Error('請填寫修改原因，最多 500 字。');
  if(data.locationSettingHistory!==undefined&&!Array.isArray(data.locationSettingHistory))throw Error('設定異動紀錄格式不正確，原資料已保留。');
- const definitions=setupDefinitions(data).map(d=>({...d}));let found=false;
- for(const d of definitions)if(d.warehouse===warehouse&&d.location===location){d.rackType=type;found=true;}
- if(!found)definitions.push({warehouse,location,rackType:type});
+ const definitions=setupDefinitions(data).map(d=>({...d}));let found=false,affected=0;
+ for(const d of definitions)if(!creating&&d.warehouse===warehouse&&d.location===location){d.location=name;if(type)d.rackType=type;found=true;}
+ if(!found)definitions.push({warehouse,location:name,...(type?{rackType:type}:{})});
+ if(!creating&&name!==location)for(const batch of data.batches)for(const row of batch.rows)if(row.warehouse===warehouse&&row.location===location){row.location=name;affected++;}
  data.locationSettings=definitions;
- data.locationSettingHistory=[...(data.locationSettingHistory||[]),{action:'setRackType',warehouse,location,before,after:type,reason,at:new Date().toISOString(),actorId:user.id,actorName:user.name||user.account||'操作人員'}];
+ data.locationSettingHistory=[...(data.locationSettingHistory||[]),{action:creating?'addRackLocation':'editRackLocation',warehouse,before:creating?null:{location,rackType:oldType||null},after:{location:name,rackType:type||null},affectedRows:affected,reason:creating?'新增貨架／位置':reason,at:new Date().toISOString(),actorId:user.id,actorName:user.name||user.account||'操作人員'}];
  return true;
 }
 async function saveRackSettings(){if(rackBusy)return;rackBusy=true;rk('rkSave').disabled=true;try{
- const t=rackTarget,value=rk('rkType').value,options=rk('rkType')._rackOptions||[],type=value==='custom'?norm(rk('rkCustom').value):/^\d+$/.test(value)?options[Number(value)]:'',reason=norm(rk('rkReason').value);
+ const t=rackTarget,value=rk('rkType').value,options=rk('rkType')._rackOptions||[],type=value==='custom'?norm(rk('rkCustom').value):/^\d+$/.test(value)?options[Number(value)]:'',reason=norm(rk('rkReason').value),name=norm(rk('rkName').value);
+ if(value==='custom'&&!type)throw Error('請填寫自訂類型名稱。');
  if(!t)throw Error('請重新開啟貨架設定。');
  let changed=false;
  await locked(inventoryKey(),()=>{
   if(!settingsAuthorized()||ownerScope()!==t.scope||!rackDialog.open||rackTarget!==t)throw Error('操作已取消或登入權限已變更。');
   if(localStorage.getItem(inventoryKey())!==t.raw)throw Error('資料已由其他操作更新，請關閉後重新開啟。');
-  const data=readInventory();changed=applyRackType(data,t.warehouse,t.location,type,reason,actor());if(changed)writeLocal(inventoryKey(),JSON.stringify(data));
+  const data=readInventory();changed=applyRackSettings(data,t.warehouse,t.location,name,type,reason,actor());if(changed)writeLocal(inventoryKey(),JSON.stringify(data));
  });
- rackDialog.close();renderSettings();ss('ssStatus').textContent=changed?'已儲存貨架類型於此瀏覽器，庫存數量與位置未變更；正式 API 尚未串接。':'貨架類型未變更。';
+ rackDialog.close();renderSettings();ss('ssStatus').textContent=changed?'已儲存貨架／位置設定於此瀏覽器，庫存數量不變；貨架代碼與識別標籤尚未啟用。':'名稱與類型未變更。';
  }catch(error){rk('rkError').textContent=error.message;}finally{rackBusy=false;rk('rkSave').disabled=false;}}
+ss('ssAddLocation').onclick=()=>openRackSettings(settingsWarehouse);
 rk('rkType').onchange=updateRackCustom;rk('rkSave').onclick=saveRackSettings;rk('rkCancel').onclick=()=>{if(!rackBusy)rackDialog.close();};rackDialog.addEventListener('cancel',event=>{if(rackBusy)event.preventDefault();});rackDialog.addEventListener('close',()=>{rackTarget=null;});
 const rackStyle=el('style');rackStyle.textContent=`
 #siRackDialog{position:fixed;inset:0;margin:auto;box-sizing:border-box;width:min(640px,calc(100% - 32px));max-height:85dvh;overflow:auto;padding:26px;border:1px solid var(--wg-line,#51432d);border-radius:18px;background:var(--wg-surface,#151719);color:var(--wg-ink,#f1eee8);font:16px Arial,'Microsoft JhengHei',sans-serif}
@@ -735,6 +741,7 @@ const style=document.createElement('style');style.textContent=`
 @media(max-width:650px){#wmsPlanningReference{padding:16px;margin-top:18px}}
 `;document.head.append(style);syncPlanning();
 })();
+
 
 
 
